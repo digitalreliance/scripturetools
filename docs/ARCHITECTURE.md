@@ -16,7 +16,7 @@ pieces fit, and why.
 | UI primitives | **Radix** (`radix-ui`), **cmdk**, **lucide-react** | Accessible dialogs, tabs, toggles and a command palette without inheriting someone else's look. No shadcn: the design is bespoke, so we own thin wrappers instead. |
 | Motion | **motion** (the Framer Motion successor) | Declarative, interruptible UI transitions. Dense visuals animate on `requestAnimationFrame` directly. Add **GSAP** only for long scroll-choreographed explainers, and **Rive** for illustrated character animation. |
 | Diagrams | **SVG + d3 modules** (`d3-scale`, `d3-shape`, `d3-array`) | React renders the marks, d3 does the maths. Right for anything under ~2,000 marks: chiasms, timelines, family trees, outlines. |
-| Dense visuals | **Canvas 2D** | 2,000 to 100,000 marks: cross-reference arcs, word frequencies. |
+| Dense visuals | **Canvas 2D**, plus raw **WebGL2** for marks that animate every frame | 2,000 to 100,000 marks: cross-reference arcs, word frequencies. Static marks are drawn once to a 2D canvas. Marks that change every frame go to the GPU: the cover's moving light is a small WebGL2 overlay (`src/components/hub/arc-light.ts`, no library) that draws only the arcs lit at that moment, and it adds onto the 2D canvas with `mix-blend-mode: plus-lighter`. |
 | Maps (next) | **MapLibre GL JS** + **Protomaps PMTiles**, **deck.gl** overlays | Open source, no API key or per-view billing. The basemap is one PMTiles file on the CDN. deck.gl draws journeys and regions on the GPU. Places come from OpenBible.info's Bible geocoding (CC BY). |
 | 3D (later) | **React Three Fiber** + drei | The tabernacle and temple built to their stated cubits. Lazy-loaded so no other page pays for three.js. |
 | Data | Build-time pipelines in `scripts/data` writing versioned JSON to `public/data` | Sources are downloaded once, validated (counts, schemas) and committed, so builds never depend on a third-party API. |
@@ -111,6 +111,10 @@ layout at 1280 px wide, scaled to fit the screen. The choice is remembered.
 - A study: under 250 KB of its own JavaScript; data fetched lazily and cached by
   the CDN.
 - 60 fps for hover, pan and zoom. Above ~2,000 marks, draw to canvas.
+- Ambient motion costs nothing when no one is looking: the cover's light stops
+  when the figure is off screen or the tab is hidden, holds while a book is in
+  focus, runs at most about 60 frames a second, and asks the browser for the
+  low-power GPU.
 - Every visual has a keyboard path, visible focus, a reduced-motion version, and a
   text alternative (a list, table or summary of what it shows).
 

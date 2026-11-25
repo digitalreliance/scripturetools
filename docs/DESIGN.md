@@ -16,9 +16,12 @@ come from the printed Bible itself.
    supplied words, LORD in small capitals.
 3. **Instruments, not cards.** Each study is a pro tool with its own palette and the
    same frame: top bar, outline, canvas, inspector, status bar (`StudyShell`).
-4. **One moment of motion per screen.** The hub has one orchestrated moment (the
-   cross-reference arcs weaving in). Everything else moves only in answer to the
-   user. Respect `prefers-reduced-motion` everywhere.
+4. **One moment of motion per screen.** The hub has one orchestrated moment: the
+   cross-reference arcs weave in, then light keeps reading through them,
+   Genesis to Revelation, in a slow seamless loop. It yields to the reader: it
+   holds while a book is in focus and rests when the figure is off screen.
+   Everything else moves only in answer to the user. Respect
+   `prefers-reduced-motion` everywhere.
 5. **Two keystrokes to anything.** `⌘K` finds studies, books and verse references.
 6. **Show the source.** Every dataset credits its origin and licence where it is
    shown. Numbers are computed from the installed KJV, not typed in.
@@ -120,6 +123,18 @@ Use `motion` for UI transitions; canvas animation runs on
 panels and popovers, up to 2.4 s only for the single orchestrated moment.
 Ease-out for entrances, ease-in-out for moves. Under reduced motion, render the
 final frame.
+
+The cover's light is the one thing that keeps moving, and it follows the same
+rules as the data: it is the arcs' own pigment, never a wash laid over them. A
+front reads from Genesis to Revelation every 18 s. As it reaches the earlier
+chapter of each link, light runs along the arc to the later chapter, at
+300 px/s, with a white-hot head, a tail in the arc's colour, and an afterglow
+that settles in about 2 s. The resting arcs dim to 80% to give it room. The
+strongest links carry the most light; weak links only glow. Each arc starts a
+little early or late and runs a little fast or slow, so the heads never march
+in step. Pointing at a book fades the light out in 200 ms and holds it in
+place until the pointer leaves. It never runs under reduced motion or without
+WebGL2; the woven figure then simply stays still.
 
 ## Writing
 

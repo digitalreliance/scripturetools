@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BOOKS } from "@/lib/bible/canon";
 import { VERSE_COUNTS } from "@/lib/bible/generated/kjv-meta";
+import { cn } from "@/lib/cn";
 import { loadChapterArcs } from "@/lib/xrefs/client";
 import type { ChapterArcs } from "@/lib/xrefs/types";
+import { ArcLight, arcSeed, FLOATS_PER_ARC, halfEllipseLength, type LightArcs } from "./arc-light";
 import { BOOK_GROUPS, CANON_GROUPS, groupColor } from "./canon-groups";
 
 const HEIGHT = 280;
@@ -14,6 +16,17 @@ const BAR_MAX = 50;
 const BOOK_GAP = 2.4; // in chapter widths
 const WEAVE_MS = 2400;
 const MAX_VERSES = 176; // Psalm 119
+/** Resting arcs settle to this alpha once the light is running, leaving it room to shine. */
+const REST_ALPHA = 0.8;
+/** Seconds for the resting arcs to settle. */
+const REST_SETTLE = 1.6;
+
+/** Canon group colours in the order the light's shader indexes them. */
+const PALETTE = CANON_GROUPS.map((g) => g.color);
+const BOOK_GROUP_INDEX = BOOK_GROUPS.map((group) => CANON_GROUPS.findIndex((g) => g.id === group));
+
+/** Resting alpha of an arc: stronger links draw brighter. */
+const arcAlpha = (weight: number, maxWeight: number) => 0.04 + 0.26 * Math.sqrt(weight / maxWeight);
 
 interface Geometry {
   width: number;
@@ -86,7 +99,9 @@ interface BookStats {
 /**
  * The whole Bible as one figure: 1,189 chapters along a spine, and the
  * strongest chapter-to-chapter cross references rising above it as arcs,
- * coloured by the canon group of the earlier chapter.
+ * coloured by the canon group of the earlier chapter. The arcs weave in once;
+ * then light keeps reading through them, Genesis to Revelation and round
+ * again (`arc-light.ts`).
  */
 export function CrossReferenceArcs() {
   const wrap = useRef<HTMLDivElement>(null);
@@ -97,6 +112,11 @@ export function CrossReferenceArcs() {
   const [geometry, setGeometry] = useState<Geometry | null>(null);
   const [book, setBook] = useState<number | null>(null);
   const woven = useRef(false);
+  const lightCanvas = useRef<HTMLCanvasElement>(null);
+  /** The light is running (WebGL2 is available and motion is welcome). */
+  const [shining, setShining] = useState(false);
+  /** Alpha of the resting arcs: 1 until the light starts, then REST_ALPHA. */
+  const rest = useRef(1);
 
   useEffect(() => {
     let alive = true;
@@ -158,7 +178,7 @@ export function CrossReferenceArcs() {
         const x2 = g.chapterX[b];
         const r = (x2 - x1) / 2;
         target.strokeStyle = groupColor(BOOK_GROUPS[chapterBook[a]]);
-        target.globalAlpha = Math.min(1, (0.04 + 0.26 * Math.sqrt(w / data.maxWeight)) * boost);
+        target.globalAlpha = Math.min(1, arcAlpha(w, data.maxWeight) * boost);
         target.beginPath();
         target.ellipse(x1 + r, BASE, r, Math.max(1.5, r * ratio), 0, Math.PI, 2 * Math.PI);
         target.stroke();
@@ -199,7 +219,7 @@ export function CrossReferenceArcs() {
     const focus = bookRef.current;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, el.width, el.height);
-    ctx.globalAlpha = focus === null ? 1 : 0.13;
+    ctx.globalAlpha = focus === null ? rest.current : 0.13;
     ctx.drawImage(layer, 0, 0);
     ctx.globalAlpha = 1;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -235,7 +255,8 @@ export function CrossReferenceArcs() {
       return;
     }
 
-    // The page's one orchestrated moment: arcs weave in, Genesis to Revelation.
+    // The page's one orchestrated moment opens: arcs weave in, Genesis to
+    // Revelation. The light below carries it on.
     let drawn = 0;
     let frame = 0;
     const start = performance.now();
@@ -263,6 +284,114 @@ export function CrossReferenceArcs() {
     bookRef.current = book;
     compose();
   }, [book, compose]);
+
+  /** Every arc as the light's shader reads it, in the same order as `data.links`. */
+  const lightArcs = useMemo((): LightArcs | null => {
+    if (!data || !geometry) return null;
+    const ratio = Math.min(1, (BASE - 8) / (geometry.width / 2));
+    const count = data.links.length;
+    const out = new Float32Array(count * FLOATS_PER_ARC);
+    const x1s = new Float32Array(count);
+    let maxLength = 0;
+    data.links.forEach(([a, b, w], i) => {
+      const x1 = geometry.chapterX[a];
+      const x2 = geometry.chapterX[b];
+      const r = (x2 - x1) / 2;
+      const length = halfEllipseLength(r, Math.max(1.5, r * ratio));
+      out.set([x1, x2, arcAlpha(w, data.maxWeight), length, BOOK_GROUP_INDEX[chapterBook[a]], arcSeed(i)], i * FLOATS_PER_ARC);
+      x1s[i] = x1;
+      maxLength = Math.max(maxLength, length);
+    });
+    return { data: out, x1: x1s, count, maxLength };
+  }, [data, geometry]);
+
+  // The light's loop reads the latest inputs through refs, so a resize or a
+  // new compose never restarts it.
+  const lightInput = useRef<{ arcs: LightArcs | null; geometry: Geometry | null }>({ arcs: null, geometry: null });
+  const composeRef = useRef(compose);
+  useEffect(() => {
+    lightInput.current = { arcs: lightArcs, geometry };
+    composeRef.current = compose;
+  }, [lightArcs, geometry, compose]);
+
+  // After the weave, light keeps reading through the arcs, Genesis to
+  // Revelation and round again. It pauses while a book is in focus, while the
+  // figure is off screen and in background tabs, and never runs under reduced
+  // motion or without WebGL2, where the woven figure simply stays still.
+  const lightReady = lightArcs !== null;
+  useEffect(() => {
+    const el = lightCanvas.current;
+    const host = wrap.current;
+    if (!lightReady || !el || !host || prefersReducedMotion()) return;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let light: ArcLight | null = null;
+    const applied: { arcs: LightArcs | null; geometry: Geometry | null } = { arcs: null, geometry: null };
+    let frame = 0;
+    let last = 0;
+    let clock = 0;
+    let done = false;
+
+    const stop = () => {
+      done = true;
+      cancelAnimationFrame(frame);
+      rest.current = 1;
+      composeRef.current();
+      setShining(false);
+    };
+    const onMotion = () => {
+      if (motion.matches) stop();
+    };
+
+    const tick = (now: number) => {
+      frame = requestAnimationFrame(tick);
+      // Light this slow needs no more than about 60 frames a second, even on faster screens.
+      if (last && now - last < 11) return;
+      // Clamp the step so a stalled frame or a returning tab never jumps the light.
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
+      last = now;
+      const { arcs, geometry: g } = lightInput.current;
+      if (!woven.current || !arcs || !g) return;
+      if (!light) {
+        light = ArcLight.create(el, PALETTE);
+        if (!light) return stop();
+        setShining(true);
+      }
+      if (light.lost) return stop();
+      if (applied.arcs !== arcs) {
+        light.setArcs(arcs);
+        applied.arcs = arcs;
+      }
+      if (applied.geometry !== g) {
+        light.setView({ width: g.width, height: HEIGHT, base: BASE, dpr: window.devicePixelRatio || 1 });
+        applied.geometry = g;
+      }
+      // A book in focus has the reader's attention: hold the light where it is.
+      if (bookRef.current !== null) return;
+      clock += dt;
+      if (rest.current > REST_ALPHA) {
+        rest.current = Math.max(REST_ALPHA, rest.current - (dt / REST_SETTLE) * (1 - REST_ALPHA));
+        composeRef.current();
+      }
+      light.render(clock);
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      cancelAnimationFrame(frame);
+      if (done || !entry.isIntersecting) return;
+      last = 0;
+      frame = requestAnimationFrame(tick);
+    });
+    io.observe(host);
+    motion.addEventListener("change", onMotion);
+    return () => {
+      done = true;
+      io.disconnect();
+      motion.removeEventListener("change", onMotion);
+      cancelAnimationFrame(frame);
+      light?.dispose();
+      rest.current = 1;
+    };
+  }, [lightReady]);
 
   const bookAt = useCallback(
     (x: number) => {
@@ -353,6 +482,15 @@ export function CrossReferenceArcs() {
         style={{ height: HEIGHT }}
       >
         <canvas ref={canvas} aria-hidden className="absolute inset-0 h-full w-full" />
+        {/* The light adds onto the resting arcs; it steps aside while a book is in focus. */}
+        <canvas
+          ref={lightCanvas}
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-0 h-full w-full mix-blend-screen transition-opacity duration-200 ease-out supports-[mix-blend-mode:plus-lighter]:mix-blend-plus-lighter",
+            (!shining || book !== null) && "opacity-0",
+          )}
+        />
         {book !== null && geometry ? (
           <div
             aria-hidden
