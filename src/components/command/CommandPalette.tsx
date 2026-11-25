@@ -1,41 +1,31 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Command } from "cmdk";
-import { CornerDownLeft, Search } from "lucide-react";
-import { Dialog } from "radix-ui";
-import { Kbd } from "@/components/primitives/Kbd";
-import { formatReference, parseReference } from "@/lib/bible/reference";
-import { studyHref } from "@/lib/routes";
-import { SITE } from "@/lib/site";
-import { CATEGORIES, STUDIES, getCategory } from "@/studies/registry";
-
-const OPEN_EVENT = "scripture:open-command-palette";
-
-/** Open the palette from any button. */
-export function openCommandPalette(): void {
-  window.dispatchEvent(new Event(OPEN_EVENT));
-}
+import { useEffect, useState, type ComponentType } from "react";
+import type { CommandDialogProps } from "./CommandDialog";
+import { loadCommandDialog, OPEN_EVENT, preloadCommandPalette } from "./open";
 
 function isTyping(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   return target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
 }
 
-const itemClass =
-  "flex min-h-11 cursor-default items-center gap-3 rounded-[8px] px-3 py-2 text-[14px] text-ink outline-none select-none data-[disabled=true]:cursor-not-allowed data-[disabled=true]:text-ink-muted data-[selected=true]:bg-paper-sunk";
-
-/** ⌘K, Ctrl+K or "/" anywhere: find a study, jump to a section, or a verse in Revelation. */
+/**
+ * ⌘K, Ctrl+K or "/" anywhere: find a study, jump to a section, or a verse in
+ * Revelation. Only this launcher ships with the page. It answers the shortcuts
+ * from the first paint and fetches the palette itself (./CommandDialog) the
+ * first time it opens. Pressing ⌘ or Ctrl, or pointing at a search button,
+ * starts that fetch a moment early.
+ */
 export function CommandPalette() {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [Palette, setPalette] = useState<ComponentType<CommandDialogProps> | null>(null);
 
   useEffect(() => {
     const onOpen = () => setOpen(true);
     const onKey = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      if (event.key === "Meta" || event.key === "Control") {
+        preloadCommandPalette();
+      } else if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setOpen((v) => !v);
       } else if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping(event.target)) {
@@ -51,121 +41,23 @@ export function CommandPalette() {
     };
   }, []);
 
-  const revelationRef = useMemo(() => {
-    const ref = query.trim().length > 2 ? parseReference(query) : null;
-    return ref && ref.book === "REV" && ref.verse !== undefined ? ref : null;
-  }, [query]);
+  // Fetch the palette the first time it is wanted.
+  useEffect(() => {
+    if (!open || Palette) return;
+    let current = true;
+    loadCommandDialog().then(
+      (component) => {
+        if (current) setPalette(() => component);
+      },
+      () => {
+        // Offline, or this build's files are gone: stay closed so the next shortcut retries.
+        if (current) setOpen(false);
+      },
+    );
+    return () => {
+      current = false;
+    };
+  }, [open, Palette]);
 
-  const studies = useMemo(
-    () =>
-      STUDIES.filter((s) => s.status === "live" || SITE.showPlannedStudies).toSorted(
-        (a, b) => Number(b.status === "live") - Number(a.status === "live"),
-      ),
-    [],
-  );
-
-  function close() {
-    setOpen(false);
-    setQuery("");
-  }
-
-  function go(href: string) {
-    close();
-    router.push(href);
-  }
-
-  function goToSection(id: string) {
-    close();
-    if (window.location.pathname === "/") {
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      document.getElementById(id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-      window.history.replaceState(window.history.state, "", `#${id}`);
-    } else {
-      router.push(`/#${id}`);
-    }
-  }
-
-  return (
-    <Dialog.Root open={open} onOpenChange={(next) => (next ? setOpen(true) : close())}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[90] bg-[rgb(20_18_16/0.32)] backdrop-blur-[2px]" />
-        <Dialog.Content className="fixed top-[14vh] left-1/2 z-[91] w-[640px] max-w-[calc(100vw-32px)] -translate-x-1/2 overflow-hidden rounded-panel border border-paper-line bg-paper-raised text-ink shadow-float focus:outline-none">
-          <Dialog.Title className="sr-only">Search {SITE.name}</Dialog.Title>
-          <Dialog.Description className="sr-only">Find a study or a section, or type a verse in Revelation.</Dialog.Description>
-          <Command label={`Search ${SITE.name}`} loop>
-            <div className="flex items-center gap-3 border-b border-paper-line px-4">
-              <Search aria-hidden className="size-4 shrink-0 text-ink-muted" />
-              <Command.Input
-                value={query}
-                onValueChange={setQuery}
-                placeholder="Search studies, or type a verse such as Rev 12:9"
-                className="h-14 min-w-0 flex-1 bg-transparent text-[16px] text-ink placeholder:text-ink-faint focus:outline-none"
-              />
-              <Kbd className="text-ink-muted">Esc</Kbd>
-            </div>
-            <Command.List className="scroll-thin max-h-[min(56vh,520px)] overflow-y-auto p-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-[12px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-ink-muted">
-              <Command.Empty className="px-3 py-8 text-center text-[14px] text-ink-muted">
-                Nothing matches “{query}”. Try a topic such as maps, prophecy or chiasm, or a verse in Revelation such as 12:9.
-              </Command.Empty>
-
-              {revelationRef ? (
-                <Command.Group heading="In Revelation's mirror" forceMount>
-                  <Command.Item
-                    forceMount
-                    value={`verse ${query}`}
-                    onSelect={() => go(`${studyHref("revelation-chiasm")}#verse=${revelationRef.chapter}:${revelationRef.verse}`)}
-                    className={itemClass}
-                  >
-                    <span className="flex-1">
-                      Find {formatReference({ book: "REV", chapter: revelationRef.chapter, verse: revelationRef.verse }, "long")} in
-                      Revelation&rsquo;s mirror
-                    </span>
-                    <CornerDownLeft aria-hidden className="size-4 text-ink-muted" />
-                  </Command.Item>
-                </Command.Group>
-              ) : null}
-
-              <Command.Group heading="Studies">
-                {studies.map((study) => (
-                  <Command.Item
-                    key={study.slug}
-                    value={study.title}
-                    keywords={[study.summary, getCategory(study.category).title, ...study.keywords]}
-                    disabled={study.status !== "live" || !study.href}
-                    onSelect={() => study.href && go(study.href)}
-                    className={itemClass}
-                  >
-                    <span
-                      aria-hidden
-                      className={study.status === "live" ? "size-2 shrink-0 rounded-full bg-ink" : "size-2 shrink-0 rounded-full border border-ink-muted"}
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium">{study.title}</span>
-                      <span className="block truncate text-[12.5px] text-ink-muted">{study.summary}</span>
-                    </span>
-                    <span className="shrink-0 text-[12px] text-ink-muted">{study.status === "live" ? "Open" : "Planned"}</span>
-                  </Command.Item>
-                ))}
-              </Command.Group>
-
-              <Command.Group heading="Sections of the index">
-                {CATEGORIES.map((category) => (
-                  <Command.Item
-                    key={category.id}
-                    value={`section ${category.title}`}
-                    keywords={[category.description]}
-                    onSelect={() => goToSection(category.id)}
-                    className={itemClass}
-                  >
-                    <span className="flex-1">{category.title}</span>
-                    <span className="text-[12px] text-ink-muted">Section</span>
-                  </Command.Item>
-                ))}
-              </Command.Group>
-            </Command.List>
-          </Command>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
-  );
+  return Palette ? <Palette open={open} onOpenChange={setOpen} /> : null;
 }

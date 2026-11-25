@@ -106,13 +106,56 @@ layout at 1280 px wide, scaled to fit the screen. The choice is remembered.
 
 ## Budgets
 
-- Hub: under 170 KB of compressed JavaScript before interaction; largest paint
-  under 2 s on desktop broadband.
+- Hub: under 170 KB of compressed JavaScript before interaction, measured as
+  below; largest paint under 2 s on desktop broadband.
 - A study: under 250 KB of its own JavaScript; data fetched lazily and cached by
   the CDN.
 - 60 fps for hover, pan and zoom. Above ~2,000 marks, draw to canvas.
 - Every visual has a keyboard path, visible focus, a reduced-motion version, and a
   text alternative (a list, table or summary of what it shows).
+
+### Measuring the hub
+
+Build, then add up the gzipped size of every script the hub makes a browser
+load (KB here is 1,024 bytes):
+
+```bash
+npm run build
+grep -oE '<script src="/_next/static/chunks/[^"]+\.js"[^>]*>' .next/server/app/index.html \
+  | grep -v noModule | grep -oE '/_next/static/chunks/[^"]+\.js' | sort -u \
+  | while read -r chunk; do gzip -9 -c ".next${chunk#/_next}" | wc -c; done \
+  | awk '{ total += $1 } END { print total }'
+```
+
+Two things are left out on purpose:
+
+- **The `noModule` polyfill bundle** (38.5 KB), which Next.js adds to every page
+  for browsers without JavaScript modules. Browsers with modules, which is every
+  browser that can run this site, skip it without downloading it. Counting it
+  would put 170 KB out of reach for any page: an empty Next.js 16.4 page with one
+  link and our error boundary comes to 177.6 KB with it and 139.1 KB without.
+- **Code fetched once the page is interactive**: the ⌘K palette, which loads the
+  first time it opens, and the code of studies whose links are on screen, which
+  Next.js prefetches at low priority so they open instantly. Prefetched code
+  counts against that study's budget.
+
+Those 139.1 KB are Next.js and React, which leaves the hub about 31 KB for its
+own code. In November 2026 it used 12 KB, for 151.1 KB in all; before the ⌘K
+palette and tailwind-merge were taken out of the first load, it was 183.8 KB.
+To keep it there:
+
+- Render on the server whatever doesn't respond to the visitor. A Client
+  Component brings everything it imports into the page's JavaScript, so keep the
+  `"use client"` part small and pass server-rendered children into it, as
+  `SearchButton` does. lucide-react icons are Client Components even when a
+  Server Component renders them.
+- Load on first use whatever the first paint doesn't need. Each page ships only a
+  small launcher for the ⌘K palette; never import
+  `src/components/command/CommandDialog.tsx` (cmdk, Radix Dialog, the registry,
+  the reference parser) statically.
+- In the hub's Client Components, join classes with `clsx` unless they really
+  need merging: `cn` brings in tailwind-merge (about 9 KB).
+- `npx next analyze` shows what each chunk holds and which import pulled it in.
 
 ## Content and licences
 
