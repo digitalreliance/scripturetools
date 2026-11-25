@@ -1,19 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { CornerDownLeft, Search } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { Kbd } from "@/components/primitives/Kbd";
-import { formatReference, parseReference } from "@/lib/bible/reference";
+import { formatReference } from "@/lib/bible/reference";
 import { studyHref } from "@/lib/routes";
 import { SITE } from "@/lib/site";
 import { CATEGORIES, STUDIES, getCategory } from "@/studies/registry";
+import { revelationVerse } from "./verse";
 
 export interface CommandDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** What had focus when the palette opened, to return focus to when it closes. */
+  opener: HTMLElement | SVGElement | null;
 }
 
 const itemClass =
@@ -24,14 +27,13 @@ const itemClass =
  * Revelation. `CommandPalette` loads this module the first time the palette
  * opens (see ./open.ts) and owns the shortcuts and the open state.
  */
-export function CommandDialog({ open, onOpenChange }: CommandDialogProps) {
+export function CommandDialog({ open, onOpenChange, opener }: CommandDialogProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  // Off while the palette closes to load another page, which then has the focus.
+  const returnFocus = useRef(true);
 
-  const revelationRef = useMemo(() => {
-    const ref = query.trim().length > 2 ? parseReference(query) : null;
-    return ref && ref.book === "REV" && ref.verse !== undefined ? ref : null;
-  }, [query]);
+  const revelationRef = useMemo(() => revelationVerse(query), [query]);
 
   const studies = useMemo(
     () =>
@@ -46,27 +48,41 @@ export function CommandDialog({ open, onOpenChange }: CommandDialogProps) {
     setQuery("");
   }
 
+  /** Close and load another page. The opener is leaving with this one, so focus is left alone. */
   function go(href: string) {
+    returnFocus.current = false;
     close();
     router.push(href);
   }
 
   function goToSection(id: string) {
-    close();
     if (window.location.pathname === "/") {
+      close();
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       document.getElementById(id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
       window.history.replaceState(window.history.state, "", `#${id}`);
     } else {
-      router.push(`/#${id}`);
+      go(`/#${id}`);
     }
+  }
+
+  // Radix returns focus to a Dialog.Trigger, and this palette has none, so focus
+  // would drop to <body>. Return it to the opener, without scrolling: choosing a
+  // section has just scrolled the hub away from it.
+  function restoreFocus(event: Event) {
+    event.preventDefault();
+    if (returnFocus.current && opener?.isConnected) opener.focus({ preventScroll: true });
+    returnFocus.current = true;
   }
 
   return (
     <Dialog.Root open={open} onOpenChange={(next) => (next ? onOpenChange(true) : close())}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[90] bg-[rgb(20_18_16/0.32)] backdrop-blur-[2px]" />
-        <Dialog.Content className="fixed top-[14vh] left-1/2 z-[91] w-[640px] max-w-[calc(100vw-32px)] -translate-x-1/2 overflow-hidden rounded-panel border border-paper-line bg-paper-raised text-ink shadow-float focus:outline-none">
+        <Dialog.Content
+          onCloseAutoFocus={restoreFocus}
+          className="fixed top-[14vh] left-1/2 z-[91] w-[640px] max-w-[calc(100vw-32px)] -translate-x-1/2 overflow-hidden rounded-panel border border-paper-line bg-paper-raised text-ink shadow-float focus:outline-none"
+        >
           <Dialog.Title className="sr-only">Search {SITE.name}</Dialog.Title>
           <Dialog.Description className="sr-only">Find a study or a section, or type a verse in Revelation.</Dialog.Description>
           <Command label={`Search ${SITE.name}`} loop>
