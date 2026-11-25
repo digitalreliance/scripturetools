@@ -1,5 +1,3 @@
-import { Wordmark } from "@/components/brand/BrandMark";
-import { Kbd } from "@/components/primitives/Kbd";
 import { XREFS_CREDIT } from "@/lib/xrefs/credit";
 import { SITE } from "@/lib/site";
 import { CHART_SOURCE } from "@/studies/revelation-chiasm/data/chiasm";
@@ -9,10 +7,10 @@ const link = "underline decoration-paper-line underline-offset-3 transition-colo
 /** Every text and dataset, credited. */
 export function Sources() {
   return (
-    <footer id="sources" className="border-t border-paper-line bg-paper text-ink">
+    <section id="sources" aria-labelledby="sources-title" className="border-t border-paper-line bg-paper text-ink">
       <div className="mx-auto grid max-w-[1320px] grid-cols-12 gap-x-10 pt-14 pr-[188px] pb-12 pl-14">
         <div className="col-span-4">
-          <h2 className="text-[24px] leading-tight font-semibold tracking-[-0.02em] [font-stretch:110%]">Sources</h2>
+          <h2 id="sources-title" className="text-[24px] leading-tight font-semibold tracking-[-0.02em] [font-stretch:110%]">Sources</h2>
           <p className="mt-2 max-w-[34ch] text-[14px] leading-relaxed text-ink-muted">
             Every text and dataset here is public domain or openly licensed, and credited wherever it appears.
           </p>
@@ -57,13 +55,7 @@ export function Sources() {
             </dd>
           </div>
         </dl>
-        <div className="col-span-12 mt-14 flex items-center justify-between border-t border-paper-line pt-6 text-[13px] text-ink-muted">
-          <Wordmark className="text-ink" />
-          <span className="inline-flex items-center gap-2">
-            Search from anywhere with <Kbd>⌘K</Kbd>
-          </span>
-        </div>
       </div>
-    </footer>
+    </section>
   );
 }

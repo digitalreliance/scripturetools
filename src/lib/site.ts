@@ -19,4 +19,13 @@ export const SITE = {
    * released or updated first.
    */
   recentStudyCount: 5,
+  /** The public repository. Every "Contribute" link is built from it. */
+  repo: { owner: "digitalreliance", name: "openscripture", branch: "main" },
+  /**
+   * The maker's X handle, without the @, for the hub's footer. Null hides the
+   * link.
+   */
+  xHandle: null as string | null,
+  /** First year in the copyright line. */
+  copyrightYear: 2026,
 } as const;

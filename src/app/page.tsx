@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Contents, type ContentsGroup } from "@/components/hub/Contents";
 import { Cover } from "@/components/hub/Cover";
+import { SiteFooter } from "@/components/hub/SiteFooter";
 import { Sources } from "@/components/hub/Sources";
 import { ThumbIndex } from "@/components/hub/ThumbIndex";
 import { SITE } from "@/lib/site";
@@ -26,6 +27,7 @@ export default function HomePage() {
       <Cover />
       <Contents groups={groups} recent={recent} />
       <Sources />
+      <SiteFooter />
       <ThumbIndex tabs={groups.map((g) => ({ id: g.category.id, label: g.category.tab, count: g.studies.length }))} />
     </>
   );

@@ -96,6 +96,10 @@ single accented word inside a headline, no `→` glued to button text, no
 - Live studies appear as large **plates** (a live preview in the study's own
   palette). Planned studies appear as compact contents rows. Hierarchy comes from
   status, not from identical cards.
+- The pages end with **Sources** (every credit) and then the hub's only
+  footer, one quiet row: the wordmark (back to the cover), All studies,
+  Sources and licences, Contribute, Report a mistake, then X and GitHub and
+  the copyright. Studies have no footer; their way in is the Contribute menu.
 - Under the cover, a **carousel** presents the newest live studies (up to
   `SITE.recentStudyCount`, five; most recently released or updated first) one
   plate at a time. Each plate plays its demo as it arrives. A row of tabs
@@ -119,6 +123,12 @@ Every study renders inside `StudyShell` (`src/components/shell`):
 │ status                                                     status │ 28
 └────────────────────────────────────────────────────────────────────┘
 ```
+
+The top bar always ends with **Contribute** (before the inspector toggle),
+rendered by `StudyShell` from the study's `slug`: report a mistake or suggest an
+improvement (a GitHub issue prefilled with the study and the exact view, hash
+included), or read the study's code. Links are built in `src/lib/contribute.ts`
+from `SITE.repo`.
 
 Shareable state lives in the URL hash. Every study has a keyboard path through
 its main interaction and visible focus. Panels collapse with `[` and `]`.
