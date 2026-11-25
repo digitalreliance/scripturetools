@@ -15,13 +15,13 @@ import { SITE } from "../site";
 
 describe("contribute links", () => {
   it("points at the public repository", () => {
-    expect(REPO_URL).toBe(`https://github.com/${SITE.repo.owner}/scripture`);
+    expect(REPO_URL).toBe(`https://github.com/${SITE.repo.owner}/${SITE.repo.name}`);
     expect(CONTRIBUTING_URL).toBe(`${REPO_URL}/blob/main/CONTRIBUTING.md`);
   });
 
   it("opens an issue form with only the fields it knows", () => {
     const url = new URL(newIssueUrl("bug"));
-    expect(url.pathname).toBe(`/${SITE.repo.owner}/scripture/issues/new`);
+    expect(url.pathname).toBe(`/${SITE.repo.owner}/${SITE.repo.name}/issues/new`);
     expect([...url.searchParams.keys()]).toEqual(["template"]);
     expect(url.searchParams.get("template")).toBe("something-is-broken.yml");
   });

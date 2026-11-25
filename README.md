@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://openscripture-mu.vercel.app">Open Scripture</a>
+  <a href="https://scripturetools.vercel.app">Open Scripture</a>
   &nbsp;·&nbsp;
   <a href="#the-text-stays-as-it-is">Our principles</a>
   &nbsp;·&nbsp;
@@ -36,7 +36,7 @@ has a link you can share.
 
 | | |
 |---|---|
-| **Live** | [Revelation's mirror](https://openscripture-mu.vercel.app/studies/revelation-chiasm): Revelation is built as a mirror around 12:9–10. Follow 51 paired passages from the first verse to the centre and back out. |
+| **Live** | [Revelation's mirror](https://scripturetools.vercel.app/studies/revelation-chiasm): Revelation is built as a mirror around 12:9–10. Follow 51 paired passages from the first verse to the centre and back out. |
 | **Planned** | A King James reader, Paul's journeys, the Exodus route, the kings of Israel and Judah, the tabernacle, a cross-reference atlas, the Old Testament in the New, and more. See them all in [`src/studies/registry.ts`](src/studies/registry.ts). |
 
 <p align="center">
@@ -80,8 +80,8 @@ Bible they know.
 You need [Node.js](https://nodejs.org) 20.9 or newer (22 recommended).
 
 ```bash
-git clone https://github.com/digitalreliance/scripture.git
-cd scripture
+git clone https://github.com/digitalreliance/scripturetools.git
+cd scripturetools
 npm install
 npm run dev          # http://localhost:3000
 ```

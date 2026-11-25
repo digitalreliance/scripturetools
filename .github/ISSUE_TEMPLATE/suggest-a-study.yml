@@ -8,7 +8,7 @@ body:
       value: |
         Studies help people **see** what is already in the Bible: where things are, how they connect, in what order, in what place. They don't teach a doctrine or a reading.
 
-        Please read [the text stays as it is](https://github.com/digitalreliance/scripture/blob/main/CONTRIBUTING.md#start-here-the-text-stays-as-it-is) before you suggest one.
+        Please read [the text stays as it is](https://github.com/digitalreliance/scripturetools/blob/main/CONTRIBUTING.md#start-here-the-text-stays-as-it-is) before you suggest one.
   - type: input
     id: study
     attributes:

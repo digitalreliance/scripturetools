@@ -92,8 +92,8 @@ Look for issues labelled **good first issue** if you'd like somewhere to start.
 You need [Node.js](https://nodejs.org) 20.9 or newer (22 recommended) and git.
 
 ```bash
-git clone https://github.com/<you>/scripture.git   # your fork
-cd scripture
+git clone https://github.com/<you>/scripturetools.git   # your fork
+cd scripturetools
 npm install
 npm run dev                                        # http://localhost:3000
 ```
