@@ -7,8 +7,11 @@
  * - viewBox is 320 x 200 (16:10). The SVG fills its container's width.
  * - variant "plate" is the large, detailed drawing; "thumb" is a simplified
  *   drawing that stays legible at ~96 px wide.
- * - Static by default. A short animation plays while an ancestor with the
- *   class `illo-host` is hovered or contains focus. Reduced motion respected.
+ * - Static by default. The animation plays while an ancestor with the class
+ *   `illo-host` is hovered or contains focus, or has the class `illo-play`
+ *   (the hub carousel sets it on the study it presents; `--illo-state: paused`
+ *   holds it). A plate's animation is its study's demo: at most ~6 s, showing
+ *   what the study does. Reduced motion respected.
  */
 import type { ReactNode } from "react";
 import type { StudyPalette } from "@/studies/palettes";

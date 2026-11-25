@@ -16,9 +16,10 @@ come from the printed Bible itself.
    supplied words, LORD in small capitals.
 3. **Instruments, not cards.** Each study is a pro tool with its own palette and the
    same frame: top bar, outline, canvas, inspector, status bar (`StudyShell`).
-4. **One moment of motion per screen.** The hub has one orchestrated moment (the
-   cross-reference arcs weaving in). Everything else moves only in answer to the
-   user. Respect `prefers-reduced-motion` everywhere.
+4. **One moment of motion per screen.** On the hub's cover it is the
+   cross-reference arcs weaving in; on its pages, the carousel presenting the
+   newest studies, each with a short demo of what it does. Everything else moves
+   only in answer to the user. Respect `prefers-reduced-motion` everywhere.
 5. **Two keystrokes to anything.** `⌘K` finds studies, books and verse references.
 6. **Show the source.** Every dataset credits its origin and licence where it is
    shown. Numbers are computed from the installed KJV, not typed in.
@@ -92,6 +93,12 @@ single accented word inside a headline, no `→` glued to button text, no
 - Live studies appear as large **plates** (a live preview in the study's own
   palette). Planned studies appear as compact contents rows. Hierarchy comes from
   status, not from identical cards.
+- Under the cover, a **carousel** presents the newest live studies (up to
+  `SITE.recentStudyCount`, five; most recently released or updated first) one
+  plate at a time. Each plate plays its demo as it arrives. A row of tabs
+  beneath names every study in it, the current one's hairline filling as its
+  time runs, with a pause button first. With a single study there are no tabs
+  and nothing rotates.
 - 8 px grid. Radii follow hierarchy: plates 16, panels 10, controls 8, tags 5.
   Shadows only on things that truly float (menus, the command palette, popovers).
 
@@ -117,9 +124,17 @@ its main interaction and visible focus. Panels collapse with `[` and `]`.
 
 Use `motion` for UI transitions; canvas animation runs on
 `requestAnimationFrame`. Durations: 120 ms for hover/press, 200–280 ms for
-panels and popovers, up to 2.4 s only for the single orchestrated moment.
+panels and popovers, up to 2.4 s for an orchestrated moment.
 Ease-out for entrances, ease-in-out for moves. Under reduced motion, render the
 final frame.
+
+The hub carousel holds each study for 8 s: its plate's demo (at most ~6 s; for
+Revelation's mirror, the brackets drawing in and then the walk to the centre),
+then a rest. The new plate fades in over the old in 500 ms. Rotation runs only
+while the carousel is on screen; it holds while the pointer is over it or
+keyboard focus is inside it, and the pause button stops it and finishes the
+drawing. Under reduced motion it starts stopped and plays no demos. A demo first
+plays when the carousel scrolls into view, not on load.
 
 ## Writing
 

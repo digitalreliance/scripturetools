@@ -49,6 +49,8 @@ Read `node_modules/next/dist/docs/` when unsure; this version differs from older
 - Book ids are USFM codes (`GEN`, `1SA`, `PSA`, `JHN`, `REV`…). Canonical reference
   strings: `REV 12:9`, `REV 12:9-11`, `REV 4:10-5:1`, `REV 12`.
 - Build every internal URL with `src/lib/routes.ts`.
+- A live study has `released` (`YYYY-MM-DD`) in the registry; set `updated` when a change is
+  worth a second look. The hub carousel shows the newest five by these dates.
 - Verse markup: `<i>` translators' supplied words (italic), `<j>` words of Christ
   (red letter), `<n>` the divine name (LORD in small capitals). Render with
   `<VerseText>`; never `dangerouslySetInnerHTML`.
