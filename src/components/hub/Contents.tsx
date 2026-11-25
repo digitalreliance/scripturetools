@@ -2,8 +2,10 @@ import Link from "next/link";
 import { SearchButton } from "@/components/command/SearchButton";
 import { BOOKS } from "@/lib/bible/canon";
 import { cn } from "@/lib/cn";
-import { getCategory, type Category, type Study } from "@/studies/registry";
+import type { Category, Study } from "@/studies/registry";
 import { StudyIllustration } from "./illustrations";
+import { RecentStudies } from "./RecentStudies";
+import { Status } from "./Status";
 
 export interface ContentsGroup {
   category: Category;
@@ -12,57 +14,6 @@ export interface ContentsGroup {
 
 const bookNames = (books: Study["books"]) =>
   books === "all" ? "All 66 books" : books.map((id) => BOOKS.find((b) => b.id === id)?.name ?? id).join(", ");
-
-function Status({ live }: { live: boolean }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-[12px] text-ink-muted">
-      <span aria-hidden className={cn("size-2 rounded-full", live ? "bg-ink" : "border border-ink-muted")} />
-      {live ? "Live" : "Planned"}
-    </span>
-  );
-}
-
-/** The featured live study, shown as a plate under the cover. */
-function FeaturedPlate({ study }: { study: Study }) {
-  return (
-    <section aria-labelledby="featured-title" className="illo-host grid grid-cols-12 items-center gap-x-12">
-      <Link
-        href={study.href ?? "#"}
-        tabIndex={-1}
-        aria-hidden
-        className="col-span-7 block overflow-hidden rounded-plate border border-paper-line bg-paper-raised"
-      >
-        <StudyIllustration id={study.illustration} palette={study.palette} variant="plate" className="block h-auto w-full" />
-      </Link>
-      <div className="col-span-5">
-        <p className="flex items-center gap-3">
-          <Status live />
-          <span className="text-[12px] text-ink-muted">{getCategory(study.category).title}</span>
-        </p>
-        <h2 id="featured-title" className="mt-4 text-[50px] leading-[0.98] font-semibold tracking-[-0.03em] [font-stretch:115%]">
-          {study.title}
-        </h2>
-        <p className="mt-5 max-w-[44ch] text-[17px] leading-relaxed text-ink-muted">{study.summary}</p>
-        {study.facts ? (
-          <dl className="mt-7 grid grid-cols-3 gap-6 border-t border-paper-line pt-5 text-[13px]">
-            {study.facts.map(([label, value]) => (
-              <div key={label}>
-                <dt className="text-ink-muted">{label}</dt>
-                <dd className="mt-1 leading-snug font-medium">{value}</dd>
-              </div>
-            ))}
-          </dl>
-        ) : null}
-        <Link
-          href={study.href ?? "#"}
-          className="mt-8 inline-flex h-11 items-center rounded-control bg-ink px-5 text-[15px] font-semibold text-paper transition-colors hover:bg-black"
-        >
-          Open study
-        </Link>
-      </div>
-    </section>
-  );
-}
 
 function StudyRow({ study }: { study: Study }) {
   const live = study.status === "live" && study.href;
@@ -94,14 +45,14 @@ function StudyRow({ study }: { study: Study }) {
   );
 }
 
-/** The pages: the featured study, then the table of contents by category. */
-export function Contents({ groups, featured }: { groups: ContentsGroup[]; featured?: Study }) {
+/** The pages: the newest studies in a carousel, then the table of contents by category. */
+export function Contents({ groups, recent }: { groups: ContentsGroup[]; recent: Study[] }) {
   const live = groups.reduce((n, g) => n + g.studies.filter((s) => s.status === "live").length, 0);
   const total = groups.reduce((n, g) => n + g.studies.length, 0);
   return (
     <main id="contents" className="bg-paper text-ink">
       <div className="mx-auto max-w-[1320px] pt-20 pr-[188px] pb-10 pl-14">
-        {featured ? <FeaturedPlate study={featured} /> : null}
+        <RecentStudies studies={recent} />
 
         <div className="mt-24 mb-2 flex items-end justify-between gap-10">
           <div>

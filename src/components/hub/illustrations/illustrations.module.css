@@ -1,10 +1,14 @@
 /*
  * Shared styles for the hub illustrations.
  *
- * Every drawing is static by default. While an ancestor with the class
- * `illo-host` is hovered or holds focus, its marked parts replay a short
- * animation (at most ~1.6 s). Without `prefers-reduced-motion: no-preference`
- * none of the rules below the media query apply, so the finished drawing shows.
+ * Every drawing is static by default. Its marked parts replay their animation
+ * while an ancestor with the class `illo-host` is hovered or holds focus, and
+ * while an ancestor has the class `illo-play` (the hub's carousel sets it on
+ * the study it is presenting). `--illo-state: paused` on an ancestor holds the
+ * animation where it is. Thumbs finish within ~1.6 s; a plate may go on to
+ * demonstrate its study for up to ~6 s. Without
+ * `prefers-reduced-motion: no-preference` none of the rules below the media
+ * query apply, so the finished drawing shows.
  *
  * Timing comes from custom properties set inline on each part:
  *   --d  delay      (default 0ms)
@@ -91,72 +95,70 @@
   opacity: 0;
 }
 
+/* A layer that fades in for its window (--d to --d + --t), then out; hidden at rest. */
+.veil {
+  opacity: 0;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  [class~="illo-host"]:hover .draw,
-  [class~="illo-host"]:focus-within .draw {
-    stroke-dasharray: 1 1;
+  /* The gap is twice the dash, so an undrawn round-capped line leaves no dot at its end. */
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) .draw {
+    stroke-dasharray: 1 2;
     animation-name: draw;
   }
 
-  [class~="illo-host"]:hover .growX,
-  [class~="illo-host"]:focus-within .growX,
-  [class~="illo-host"]:hover .growXR,
-  [class~="illo-host"]:focus-within .growXR {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) :is(.growX, .growXR) {
     animation-name: growX;
   }
 
-  [class~="illo-host"]:hover .growY,
-  [class~="illo-host"]:focus-within .growY,
-  [class~="illo-host"]:hover .growYTop,
-  [class~="illo-host"]:focus-within .growYTop {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) :is(.growY, .growYTop) {
     animation-name: growY;
   }
 
-  [class~="illo-host"]:hover .pop,
-  [class~="illo-host"]:focus-within .pop {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) .pop {
     animation-name: pop;
   }
 
-  [class~="illo-host"]:hover .fade,
-  [class~="illo-host"]:focus-within .fade {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) .fade {
     animation-name: fade;
   }
 
-  [class~="illo-host"]:hover .wipe,
-  [class~="illo-host"]:focus-within .wipe {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) .wipe {
     animation-name: wipe;
   }
 
-  [class~="illo-host"]:hover .flash,
-  [class~="illo-host"]:focus-within .flash {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) .flash {
     opacity: 0;
     animation-name: flash;
     animation-fill-mode: forwards;
     animation-timing-function: linear;
   }
 
-  [class~="illo-host"]:hover .flash.hold,
-  [class~="illo-host"]:focus-within .flash.hold {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) .flash.hold {
     animation-name: hold;
   }
 
-  [class~="illo-host"]:hover .sweep,
-  [class~="illo-host"]:focus-within .sweep {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) .sweep {
     animation-name: sweep;
   }
 
-  [class~="illo-host"]:hover :is(.draw, .growX, .growXR, .growY, .growYTop, .pop, .fade, .wipe, .sweep),
-  [class~="illo-host"]:focus-within :is(.draw, .growX, .growXR, .growY, .growYTop, .pop, .fade, .wipe, .sweep) {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) .veil {
+    animation-name: veil;
+  }
+
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"])
+    :is(.draw, .growX, .growXR, .growY, .growYTop, .pop, .fade, .wipe, .sweep, .veil) {
     animation-duration: var(--t, 900ms);
     animation-delay: var(--d, 0ms);
     animation-timing-function: var(--e, cubic-bezier(0.22, 1, 0.36, 1));
     animation-fill-mode: both;
+    animation-play-state: var(--illo-state, running);
   }
 
-  [class~="illo-host"]:hover .flash,
-  [class~="illo-host"]:focus-within .flash {
+  :is([class~="illo-host"]:hover, [class~="illo-host"]:focus-within, [class~="illo-play"]) .flash {
     animation-duration: var(--t, 70ms);
     animation-delay: var(--d, 0ms);
+    animation-play-state: var(--illo-state, running);
   }
 }
 
@@ -234,6 +236,19 @@
   from,
   to {
     opacity: 1;
+  }
+}
+
+@keyframes veil {
+  from {
+    opacity: 0;
+  }
+  8%,
+  92% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 

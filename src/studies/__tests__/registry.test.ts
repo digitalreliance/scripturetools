@@ -1,7 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { isBookId } from "@/lib/bible/canon";
+import { isIsoDate } from "@/lib/dates";
+import { SITE } from "@/lib/site";
 import { PALETTES } from "@/studies/palettes";
-import { CATEGORIES, STUDIES, getStudy, studiesIn } from "@/studies/registry";
+import {
+  CATEGORIES,
+  STUDIES,
+  getStudy,
+  getStudyOrThrow,
+  liveStudies,
+  recentStudies,
+  studiesIn,
+  type Study,
+} from "@/studies/registry";
 
 const HEX = /^#[0-9A-F]{6}$/i;
 
@@ -56,6 +67,67 @@ describe("study registry", () => {
   it("finds studies by slug", () => {
     expect(getStudy("revelation-chiasm")?.status).toBe("live");
     expect(getStudy("nope")).toBeUndefined();
+  });
+
+  it("dates every live study, and no planned one", () => {
+    // A day of slack either side of UTC, so a study released today passes everywhere.
+    const tomorrow = new Date(Date.now() + 36 * 3600 * 1000).toISOString().slice(0, 10);
+    for (const study of STUDIES) {
+      if (study.status === "planned") {
+        expect(study.released, study.slug).toBeUndefined();
+        expect(study.updated, study.slug).toBeUndefined();
+        continue;
+      }
+      expect(study.released && isIsoDate(study.released), `${study.slug} released`).toBe(true);
+      expect(study.released! <= tomorrow, `${study.slug} released in the future`).toBe(true);
+      if (study.updated === undefined) continue;
+      expect(isIsoDate(study.updated), `${study.slug} updated`).toBe(true);
+      expect(study.updated > study.released!, `${study.slug} updated after release`).toBe(true);
+      expect(study.updated <= tomorrow, `${study.slug} updated in the future`).toBe(true);
+    }
+  });
+});
+
+describe("recent studies", () => {
+  const base = getStudyOrThrow("revelation-chiasm");
+  const study = (slug: string, released?: string, updated?: string): Study => ({
+    ...base,
+    slug,
+    status: released ? "live" : "planned",
+    href: released ? `/studies/${slug}` : null,
+    released,
+    updated,
+  });
+
+  it("puts the latest release or update first and leaves planned studies out", () => {
+    const list = [
+      study("old", "2026-01-10"),
+      study("planned"),
+      study("refreshed", "2026-01-01", "2026-06-01"),
+      study("new", "2026-03-01"),
+    ];
+    expect(recentStudies(5, list).map((s) => s.slug)).toEqual(["refreshed", "new", "old"]);
+  });
+
+  it("breaks a same-day tie by the newer release, then catalogue order", () => {
+    const list = [
+      study("updated", "2026-01-01", "2026-05-05"),
+      study("first", "2026-05-05"),
+      study("second", "2026-05-05"),
+    ];
+    expect(recentStudies(5, list).map((s) => s.slug)).toEqual(["first", "second", "updated"]);
+  });
+
+  it("keeps at most the limit", () => {
+    const list = Array.from({ length: 8 }, (_, i) => study(`s${i}`, `2026-0${i + 1}-01`));
+    expect(recentStudies(5, list).map((s) => s.slug)).toEqual(["s7", "s6", "s5", "s4", "s3"]);
+  });
+
+  it("shows every live study on the hub while there are only a few", () => {
+    expect(SITE.recentStudyCount).toBeGreaterThanOrEqual(5);
+    const shown = recentStudies(SITE.recentStudyCount);
+    expect(shown.length).toBe(Math.min(SITE.recentStudyCount, liveStudies().length));
+    expect(shown.map((s) => s.slug)).toContain("revelation-chiasm");
   });
 });
 

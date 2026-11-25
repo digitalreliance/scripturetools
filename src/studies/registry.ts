@@ -75,7 +75,14 @@ export interface Study {
   keywords: readonly string[];
   palette: StudyPalette;
   illustration: IllustrationId;
-  featured?: boolean;
+  /** The day the study went live, as YYYY-MM-DD. Every live study has one. */
+  released?: string;
+  /**
+   * The day of its last change worth a second look (a new view, more data), as
+   * YYYY-MM-DD. Leave fixes out. The hub shows the newest studies first, by
+   * this date or else `released`.
+   */
+  updated?: string;
   /** Labelled values shown on the index plate, e.g. ["Pairs", "51"]. */
   facts?: readonly (readonly [label: string, value: string])[];
   sources?: readonly StudySource[];
@@ -197,7 +204,7 @@ export const STUDIES: readonly Study[] = [
     keywords: ["chiasm", "chiastic", "mirror", "symmetry", "pattern", "apocalypse", "dragon", "literary structure"],
     palette: PALETTES.chart,
     illustration: "chiasm",
-    featured: true,
+    released: "2026-11-25",
     facts: [
       ["Book", "Revelation"],
       ["Mirrored pairs", "51"],
@@ -504,6 +511,30 @@ export function studiesIn(category: CategoryId): Study[] {
 
 export function liveStudies(): Study[] {
   return STUDIES.filter((s) => s.status === "live");
+}
+
+/** The day a study last changed for readers: its update, else its release. */
+export function lastChanged(study: Study): string | undefined {
+  return study.updated ?? study.released;
+}
+
+/** Descending order for YYYY-MM-DD strings; a missing date sorts last. */
+function newerFirst(a: string | undefined, b: string | undefined): number {
+  if (a === b) return 0;
+  if (a === undefined) return 1;
+  if (b === undefined) return -1;
+  return a > b ? -1 : 1;
+}
+
+/**
+ * Live studies, most recently released or updated first, for the hub's
+ * carousel. On the same day a newer release goes first, then catalogue order.
+ */
+export function recentStudies(limit: number, studies: readonly Study[] = STUDIES): Study[] {
+  return studies
+    .filter((s) => s.status === "live")
+    .toSorted((a, b) => newerFirst(lastChanged(a), lastChanged(b)) || newerFirst(a.released, b.released))
+    .slice(0, limit);
 }
 
 export function getCategory(id: CategoryId): Category {

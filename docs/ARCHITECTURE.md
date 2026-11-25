@@ -72,6 +72,9 @@ docs/                  this file, DESIGN.md, data/ (sources and licences)
 A study (micro-app) is a feature folder plus a thin route. To add one:
 
 1. Add an entry to `src/studies/registry.ts` (category, palette, illustration, status `planned`).
+   The illustration (`src/components/hub/illustrations`) doubles as the study's demo: the hub's
+   carousel plays the plate's animation when it presents the study, so let it show what the
+   study does, in at most ~6 s.
 2. Build it in `src/studies/<slug>/`. Render inside `StudyShell` so it inherits the
    top bar, outline, inspector, status bar, panel shortcuts and palette theming.
 3. Put its data in `src/studies/<slug>/data/` (small, hand-curated) or produce it with a
@@ -79,9 +82,12 @@ A study (micro-app) is a feature folder plus a thin route. To add one:
 4. Add `src/app/studies/<slug>/page.tsx`: read whatever the page needs at build time,
    pass only that to the client component, export `metadata`.
 5. Keep shareable state in the hash with `useHashParam`.
-6. Flip the status to `live`. The hub and the ⌘K palette pick it up automatically.
-   (`SITE.showPlannedStudies` in `src/lib/site.ts` controls whether planned
-   studies are listed at all.)
+6. Flip the status to `live` and set `released` to that day (`YYYY-MM-DD`). The hub and the ⌘K
+   palette pick it up automatically. (`SITE.showPlannedStudies` in `src/lib/site.ts` controls
+   whether planned studies are listed at all.)
+7. Later, when a change is worth a second look (a new view, more data, not a fix), set
+   `updated` to that day. The hub's carousel shows the `SITE.recentStudyCount` (five) most
+   recently released or updated studies, newest first (`recentStudies` in the registry).
 
 Studies never import each other. Shared needs move into `src/lib` or `src/components`.
 
@@ -201,5 +207,8 @@ Every dataset gets a note in `docs/data/` and an on-screen credit wherever it ap
 - **Hash state over search params.** Search params would force request-time
   rendering in this Next.js version; the hash never leaves the browser.
 - **Radix over shadcn.** We want accessibility primitives, not a starting look.
+- **Registry dates over git history.** The carousel's order comes from `released` and
+  `updated` in the registry, not from commit dates: builds stay reproducible (CI and
+  Vercel clone shallowly), and a typo fix doesn't count as news.
 - **MapLibre over Mapbox or Cesium.** No keys or metered billing; Cesium's globe
   and terrain are more than a Bible atlas needs.

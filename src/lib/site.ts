@@ -14,4 +14,9 @@ export const SITE = {
    * search. Set to false to list only live studies.
    */
   showPlannedStudies: true,
+  /**
+   * How many live studies the hub's carousel rotates through, most recently
+   * released or updated first.
+   */
+  recentStudyCount: 5,
 } as const;
