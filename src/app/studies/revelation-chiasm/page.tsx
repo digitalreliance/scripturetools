@@ -13,5 +13,5 @@ export const metadata: Metadata = {
 export default function RevelationChiasmPage() {
   // Read at build time; the client receives only Revelation and the structure.
   const payload = buildMirrorPayload();
-  return <RevelationMirror payload={payload} title={study.title} palette={study.palette} />;
+  return <RevelationMirror payload={payload} slug={study.slug} title={study.title} palette={study.palette} />;
 }

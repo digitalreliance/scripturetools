@@ -19,4 +19,17 @@ export const SITE = {
    * released or updated first.
    */
   recentStudyCount: 5,
+  /**
+   * The public repository. Every "Contribute" link is built from it. To move
+   * the repository (a renamed account or an organization), change `owner`
+   * here; the repository test then lists every other file that names it.
+   */
+  repo: { owner: "digitalreliance", name: "scripture", branch: "main" },
+  /**
+   * The project's X handle, without the @, for the hub's footer. Until there
+   * is one, the footer shows the X mark marked "coming soon", with no link.
+   */
+  xHandle: null as string | null,
+  /** First year in the copyright line. */
+  copyrightYear: 2026,
 } as const;

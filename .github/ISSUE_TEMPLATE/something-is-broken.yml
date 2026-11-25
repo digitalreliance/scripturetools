@@ -1,0 +1,34 @@
+name: Something is broken
+description: A page won't load, a control doesn't work, or something looks wrong.
+title: "Broken: "
+labels: ["bug"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Link to the page
+      placeholder: https://…/studies/revelation-chiasm#view=arcs
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What did you do?
+      description: The steps to make it happen again.
+      placeholder: |
+        1. Opened the Arcs view
+        2. Pressed F
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What happened, and what did you expect?
+      description: A screenshot helps.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Safari 19 on a MacBook Air, window 1280 pixels wide

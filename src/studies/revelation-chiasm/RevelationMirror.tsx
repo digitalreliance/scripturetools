@@ -53,10 +53,12 @@ function levelForOrdinal(levels: LevelView[], ordinal: number): LevelView {
 
 export function RevelationMirror({
   payload,
+  slug,
   title,
   palette,
 }: {
   payload: MirrorPayload;
+  slug: string;
   title: string;
   palette: StudyPalette;
 }) {
@@ -252,6 +254,7 @@ export function RevelationMirror({
 
   return (
     <StudyShell
+      slug={slug}
       title={title}
       palette={palette}
       subtitle="51 mirrored pairs around Revelation 12:9–10"

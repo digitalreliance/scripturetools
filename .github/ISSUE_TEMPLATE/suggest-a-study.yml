@@ -1,0 +1,44 @@
+name: Suggest a study or an improvement
+description: An idea for a new study, or for making an existing one more useful.
+title: "Idea: "
+labels: ["idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Studies help people **see** what is already in the Bible: where things are, how they connect, in what order, in what place. They don't teach a doctrine or a reading.
+
+        Please read [the text stays as it is](https://github.com/digitalreliance/scripture/blob/main/CONTRIBUTING.md#start-here-the-text-stays-as-it-is) before you suggest one.
+  - type: input
+    id: study
+    attributes:
+      label: Existing study (if this improves one)
+      description: Leave empty for a new study.
+      placeholder: Revelation's mirror
+  - type: input
+    id: page
+    attributes:
+      label: Link to the view (if any)
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would a reader see or do?
+      description: Describe the picture or the interaction, and which books or passages it covers.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Where would anything beyond the Bible text come from?
+      description: Maps, dates, structures and datasets need a source and a licence that allows reuse. Write "Only the Bible text" if that's all it needs.
+    validations:
+      required: true
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Our principles
+      options:
+        - label: The idea shows what the text says and leaves the text unchanged.
+          required: true
+        - label: It doesn't argue for a doctrine, a tradition or an interpretation, and where readers differ it can show the alternatives.
+          required: true

@@ -56,5 +56,10 @@ Read `node_modules/next/dist/docs/` when unsure; this version differs from older
   `<VerseText>`; never `dangerouslySetInnerHTML`.
 - Design tokens live in `src/app/globals.css`; follow `docs/DESIGN.md`.
 - Credit every non-KJV dataset (source and licence) in `docs/data/` and wherever the UI shows it.
-- Git: the repository root is the home directory. Stage only this folder's files;
-  never `git add -A` from the root.
+- The project's principles come first (README, "The text stays as it is"): never change
+  the KJV text, never write commentary or argue for an interpretation, and credit and
+  label everything that comes from outside the text.
+- Contribute links (GitHub issue forms in `.github/ISSUE_TEMPLATE`) are built in
+  `src/lib/contribute.ts`; keep their field ids in step with the forms.
+- The repository's owner is set once, in `SITE.repo` (`src/lib/site.ts`). Docs link to issues
+  relatively (`../../issues/...`); `repository.test.ts` lists any file still naming an old owner.

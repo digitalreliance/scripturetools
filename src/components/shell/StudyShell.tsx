@@ -7,8 +7,11 @@ import { BrandMark } from "@/components/brand/BrandMark";
 import { cn } from "@/lib/cn";
 import { HOME_HREF } from "@/lib/routes";
 import { paletteVars, type StudyPalette } from "@/studies/palettes";
+import { ContributeMenu } from "./ContributeMenu";
 
 export interface StudyShellProps {
+  /** The study's registry slug: names its code and its issues on GitHub. */
+  slug: string;
   title: string;
   palette: StudyPalette;
   /** Short qualifier after the title, e.g. "51 paired passages". */
@@ -47,9 +50,11 @@ function isTyping(target: EventTarget | null): boolean {
 /**
  * The frame every study uses: top bar, outline, canvas, inspector, status bar.
  * Themed entirely by the study's palette via --s-* CSS variables.
- * `[` and `]` collapse the outline and the inspector.
+ * `[` and `]` collapse the outline and the inspector. Every study gets a
+ * Contribute menu in the top bar, built from its slug.
  */
 export function StudyShell({
+  slug,
   title,
   palette,
   subtitle,
@@ -137,6 +142,7 @@ export function StudyShell({
           {actions}
           {search}
           {primaryAction}
+          <ContributeMenu slug={slug} title={title} />
           {inspector ? (
             <button
               type="button"
