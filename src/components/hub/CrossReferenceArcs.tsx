@@ -240,7 +240,8 @@ export function CrossReferenceArcs() {
     let frame = 0;
     const start = performance.now();
     const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / WEAVE_MS);
+      // A frame can be stamped just before `start`; a negative p would index links[-n].
+      const p = Math.min(1, Math.max(0, (now - start) / WEAVE_MS));
       const next = Math.round(total * (1 - (1 - p) ** 2));
       drawArcs(lctx, geometry, drawn, next);
       drawn = next;

@@ -28,6 +28,8 @@ Read `node_modules/next/dist/docs/` when unsure; this version differs from older
   `use(browser())` from `react-dom` inside `<Suspense>`, or renders after mount.
   Avoid `useSearchParams`; keep shareable study state in the URL hash.
 - `middleware.ts` is now `proxy.ts`. `next lint` is gone; use `npm run lint`.
+- The Tailwind loader rule in `next.config.ts` must skip `*.module.css`: its `as: "*.css"`
+  would turn CSS Modules into global CSS and empty their class maps.
 - `next dev` and `next build` cannot run twice at once on this project (lockfile).
 
 ## Layout
