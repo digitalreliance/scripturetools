@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. See docs/DESIGN.md for the reasoning behind every value.
+ * Only the lead edits this file; components use Tailwind utilities or CSS Modules.
+ */
+
+@theme inline {
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-baskerville), "Baskerville", "Libre Baskerville", Georgia, serif;
+  --font-scripture: var(--font-baskerville), "Baskerville", "Libre Baskerville", Georgia, serif;
+
+  /* Study palette: StudyShell sets --s-* on its root from the registry palette. */
+  --color-s-canvas: var(--s-canvas);
+  --color-s-chrome: var(--s-chrome);
+  --color-s-raised: var(--s-raised);
+  --color-s-line: var(--s-line);
+  --color-s-ink: var(--s-ink);
+  --color-s-muted: var(--s-muted);
+  --color-s-accent: var(--s-accent);
+  --color-s-on-accent: var(--s-on-accent);
+}
+
+@theme {
+  /* Cover: the hero, black calfskin. */
+  --color-cover: #141210;
+  --color-cover-raised: #1e1b18;
+  --color-cover-line: rgb(242 238 230 / 0.12);
+  --color-cover-ink: #f2eee6;
+  --color-cover-muted: #a39c90;
+
+  /* Pages: India paper and printing ink. */
+  --color-paper: #f6f5f1;
+  --color-paper-raised: #fcfbf8;
+  --color-paper-sunk: #eceae4;
+  --color-paper-line: #dcd9d1;
+  --color-ink: #1c1a17;
+  --color-ink-muted: #5f5a52;
+  --color-ink-faint: #8c867c;
+  --color-rubric: #b3261e;
+
+  /* Canon sections, named after manuscript pigments (data colours only). */
+  --color-canon-law: #e2553a;
+  --color-canon-history: #b07714;
+  --color-canon-wisdom: #3c9a5f;
+  --color-canon-prophets: #2b93a0;
+  --color-canon-gospels: #d24a72;
+  --color-canon-epistles: #4a63d9;
+  --color-canon-revelation: #9a4fc4;
+
+  /* Dense UI size used inside studies (13/18). */
+  --text-ui: 0.8125rem;
+  --text-ui--line-height: 1.125rem;
+
+  /* Radii follow hierarchy, not one value for everything. */
+  --radius-plate: 16px;
+  --radius-panel: 10px;
+  --radius-control: 8px;
+  --radius-tag: 5px;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Only for things that truly float: menus, popovers, the command palette. */
+  --shadow-float:
+    0 1px 0 rgb(20 18 16 / 0.04), 0 10px 28px -8px rgb(20 18 16 / 0.22),
+    0 28px 72px -16px rgb(20 18 16 / 0.28);
+}
+
+@layer base {
+  :root {
+    --focus-ring: var(--color-ink);
+    /* Red-letter colour used by <VerseText>; themes override it. */
+    --scripture-wj: var(--color-rubric);
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "kern";
+  }
+
+  ::selection {
+    background: rgb(28 26 23 / 0.14);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Anything rendered on the dark cover. */
+  .theme-cover {
+    --focus-ring: var(--color-cover-ink);
+    --scripture-wj: #f0806f;
+    color-scheme: dark;
+  }
+
+  ::selection:where(.theme-cover *) {
+    background: rgb(242 238 230 / 0.2);
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scripture body text: Baskerville, 18/30. */
+@utility scripture {
+  font-family: var(--font-scripture);
+  font-size: 1.125rem;
+  line-height: 1.875rem;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first;
+}
+
+@utility scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--s-line, var(--color-paper-line)) transparent;
+}
+
+/* Fine fractal grain; place on a pseudo-element or overlay at low opacity. */
+@utility grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 .09 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/*
+ * Device gate. A blocking script in <head> sets html[data-device="touch"] on
+ * phones and tablets before first paint, and html[data-preview="desktop"] once
+ * the visitor chooses the scaled desktop preview. The gate overlay carries
+ * [data-device-gate] and is hidden until then, so nothing flashes.
+ */
+[data-device-gate] {
+  display: none;
+}
+
+html[data-device="touch"]:not([data-preview="desktop"]) [data-device-gate] {
+  display: block;
+}
+
+html[data-device="touch"]:not([data-preview="desktop"]) body > :not([data-device-gate]) {
+  display: none !important;
+}
+
+[data-device-preview-bar] {
+  display: none;
+}
+
+html[data-device="touch"][data-preview="desktop"] [data-device-preview-bar] {
+  display: flex;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

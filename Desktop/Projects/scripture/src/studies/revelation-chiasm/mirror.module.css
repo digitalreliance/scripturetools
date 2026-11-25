@@ -1,0 +1,70 @@
+/* Chart paper: a faint dot grid, like the canvases in a drawing tool. */
+.paper {
+  background-color: var(--s-canvas);
+  background-image: radial-gradient(color-mix(in oklab, var(--s-line) 85%, transparent) 1px, transparent 1.2px);
+  background-size: 24px 24px;
+  background-position: 12px 12px;
+}
+
+/*
+ * The study's one orchestrated moment: on first load the brackets draw from
+ * the outermost pair inward to the centre, and their rows arrive with them.
+ * --d is the per-level delay.
+ */
+.drawIn .bracket {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 700ms var(--ease-out-quint) var(--d, 0ms) forwards;
+}
+
+.drawIn .row {
+  opacity: 0;
+  animation: arrive 420ms var(--ease-out-quint) var(--d, 0ms) forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fade {
+  transition: opacity 160ms ease-out;
+}
+
+/* The welcome sheet. */
+.sheet {
+  animation: sheetIn 260ms var(--ease-out-quint);
+}
+
+@keyframes sheetIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawIn .bracket,
+  .drawIn .row,
+  .sheet {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
