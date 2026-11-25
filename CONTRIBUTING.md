@@ -149,7 +149,11 @@ The essentials:
 4. Credit its sources in the study, in `docs/data/<slug>.md`, and in the
    registry's `sources`.
 5. Add tests for its data: counts, references that resolve, nothing invented.
-6. When it's ready, set `status: "live"` and `released: "YYYY-MM-DD"`.
+6. When it's ready, set `status: "live"` and `released: "YYYY-MM-DD"`, and
+   `preview` to the view that pictures it best (for example `view=arcs`).
+7. Update the README gallery and `docs/STUDIES.md`: with the site running
+   (`npm run build && npm start`), run `npm run docs:shots` for its picture,
+   then `npm run docs:studies`. A test fails until both are up to date.
 
 ## Pull requests
 

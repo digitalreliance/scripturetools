@@ -22,7 +22,9 @@
     "test": "vitest run",
     "data:kjv": "tsx scripts/data/kjv.ts",
     "data:xrefs": "tsx scripts/data/xrefs.ts",
-    "data": "npm run data:kjv && npm run data:xrefs"
+    "data": "npm run data:kjv && npm run data:xrefs",
+    "docs:studies": "tsx scripts/docs/studies.ts",
+    "docs:shots": "tsx scripts/docs/shots.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

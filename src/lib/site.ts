@@ -5,6 +5,8 @@ export const SITE = {
   description:
     "Interactive maps, diagrams, timelines and symbols for studying the Bible, built on the King James text.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  /** The live site, for links written into the README and docs. */
+  liveUrl: "https://scripturetools.vercel.app",
   /** Below this width a desktop browser window is considered cramped. */
   minDesktopWidth: 1024,
   /** Layout width used for the scaled desktop preview on phones and tablets. */

@@ -12,6 +12,8 @@ micro-app, all built on the public-domain King James text.
 - `npm run typecheck` · `npm run lint` · `npm test`
 - `npm run data:kjv` rebuilds `public/data/kjv` from eBible.org (download cached in `.cache/`)
 - `npm run data:xrefs` rebuilds `public/data/xrefs` from OpenBible.info
+- `npm run docs:studies` regenerates the README's study gallery and `docs/STUDIES.md` from the
+  registry; `npm run docs:shots` (site running) retakes each live study's picture
 
 ## Next.js 16.4 rules for this repo
 
