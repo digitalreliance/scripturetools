@@ -11,9 +11,17 @@ import type { CommandDialogProps } from "./CommandDialog";
 
 export const OPEN_EVENT = "scripture:open-command-palette";
 
-/** Open the palette from any button. */
-export function openCommandPalette(): void {
-  window.dispatchEvent(new Event(OPEN_EVENT));
+/** The open event; its detail is the element to return focus to when the palette closes. */
+export type OpenEvent = CustomEvent<HTMLElement | undefined>;
+
+/**
+ * Open the palette from any button, passing the button itself: Safari and
+ * Firefox on macOS don't focus a button that is clicked, so the palette could
+ * not otherwise tell where to return focus when it closes.
+ */
+export function openCommandPalette(opener?: HTMLElement): void {
+  const event: OpenEvent = new CustomEvent(OPEN_EVENT, { detail: opener });
+  window.dispatchEvent(event);
 }
 
 let dialog: Promise<ComponentType<CommandDialogProps>> | undefined;

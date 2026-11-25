@@ -13,7 +13,7 @@ export function OpenPaletteButton(props: Omit<ComponentProps<"button">, "type" |
     <button
       type="button"
       {...props}
-      onClick={openCommandPalette}
+      onClick={(event) => openCommandPalette(event.currentTarget)}
       onPointerEnter={preloadCommandPalette}
       onFocus={preloadCommandPalette}
     />
