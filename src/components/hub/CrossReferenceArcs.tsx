@@ -1,9 +1,9 @@
 "use client";
 
+import { clsx } from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BOOKS } from "@/lib/bible/canon";
 import { VERSE_COUNTS } from "@/lib/bible/generated/kjv-meta";
-import { cn } from "@/lib/cn";
 import { loadChapterArcs } from "@/lib/xrefs/client";
 import type { ChapterArcs } from "@/lib/xrefs/types";
 import { ArcLight, arcSeed, FLOATS_PER_ARC, halfEllipseLength, type LightArcs } from "./arc-light";
@@ -486,7 +486,7 @@ export function CrossReferenceArcs() {
         <canvas
           ref={lightCanvas}
           aria-hidden
-          className={cn(
+          className={clsx(
             "pointer-events-none absolute inset-0 h-full w-full mix-blend-screen transition-opacity duration-200 ease-out supports-[mix-blend-mode:plus-lighter]:mix-blend-plus-lighter",
             (!shining || book !== null) && "opacity-0",
           )}

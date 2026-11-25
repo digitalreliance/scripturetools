@@ -144,8 +144,9 @@ Two things are left out on purpose:
   counts against that study's budget.
 
 Those 139.1 KB are Next.js and React, which leaves the hub about 31 KB for its
-own code. In November 2026 it used 12 KB, for 151.1 KB in all; before the ⌘K
-palette and tailwind-merge were taken out of the first load, it was 183.8 KB.
+own code. In November 2026 it used 16 KB, for 155.0 KB in all, about 4 KB of it
+the cover's light; before the ⌘K palette and tailwind-merge were taken out of
+the first load, it was 183.8 KB.
 To keep it there:
 
 - Render on the server whatever doesn't respond to the visitor. A Client
