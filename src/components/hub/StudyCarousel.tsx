@@ -13,7 +13,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
-import { cn } from "@/lib/cn";
+import { clsx } from "clsx";
 
 export interface CarouselSlide {
   id: string;
@@ -185,7 +185,7 @@ export function StudyCarousel({ slides, label }: { slides: CarouselSlide[]; labe
           {slides.map((slide, i) => {
             const current = i === active;
             const playing = current && (demo === "armed" || demo === "playing");
-            const className = cn(
+            const className = clsx(
               "col-start-1 row-start-1 block transition-[opacity,visibility]",
               current
                 ? "illo-host z-10 opacity-100 duration-500 ease-out-quint"
@@ -218,7 +218,7 @@ export function StudyCarousel({ slides, label }: { slides: CarouselSlide[]; labe
                 aria-roledescription={multiple ? "slide" : undefined}
                 aria-label={multiple ? `${i + 1} of ${count}` : undefined}
                 inert={!current}
-                className={cn(
+                className={clsx(
                   "col-start-1 row-start-1 self-center transition-[opacity,translate,visibility] ease-out-quint",
                   current ? "opacity-100 delay-150 duration-500" : "invisible translate-y-1.5 opacity-0 duration-150",
                 )}
@@ -265,7 +265,7 @@ export function StudyCarousel({ slides, label }: { slides: CarouselSlide[]; labe
                   className="group min-w-0 rounded-[4px] py-1 text-left"
                 >
                   <span
-                    className={cn(
+                    className={clsx(
                       "block h-[2px] overflow-hidden rounded-full transition-colors",
                       current ? "bg-ink/30" : "bg-paper-line group-hover:bg-ink/20",
                     )}
@@ -278,7 +278,7 @@ export function StudyCarousel({ slides, label }: { slides: CarouselSlide[]; labe
                     />
                   </span>
                   <span
-                    className={cn(
+                    className={clsx(
                       "mt-3 block truncate text-[13px] transition-colors",
                       current ? "font-medium text-ink" : "text-ink-muted group-hover:text-ink",
                     )}
