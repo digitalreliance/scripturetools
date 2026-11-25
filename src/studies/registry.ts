@@ -83,6 +83,12 @@ export interface Study {
    * this date or else `released`.
    */
   updated?: string;
+  /**
+   * The URL hash of the view pictured in the README and docs/STUDIES.md, e.g.
+   * "view=arcs". Taken by `npm run docs:shots`; the study's default view if
+   * left out.
+   */
+  preview?: string;
   /** Labelled values shown on the index plate, e.g. ["Pairs", "51"]. */
   facts?: readonly (readonly [label: string, value: string])[];
   sources?: readonly StudySource[];
@@ -205,6 +211,7 @@ export const STUDIES: readonly Study[] = [
     palette: PALETTES.chart,
     illustration: "chiasm",
     released: "2026-11-25",
+    preview: "view=arcs",
     facts: [
       ["Book", "Revelation"],
       ["Mirrored pairs", "51"],
