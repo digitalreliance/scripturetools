@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/cn";
+// clsx rather than cn: none of these classes conflict, and cn's tailwind-merge
+// would add about 9 KB to the hub's JavaScript before interaction.
+import { clsx } from "clsx";
 
 export interface ThumbTab {
   id: string;
@@ -45,7 +47,7 @@ export function ThumbIndex({ tabs }: { tabs: ThumbTab[] }) {
   return (
     <nav
       aria-label="Sections"
-      className={cn(
+      className={clsx(
         "fixed top-1/2 right-0 z-40 -translate-y-1/2 transition-[opacity,translate] duration-300 ease-out-quint",
         shown ? "opacity-100" : "pointer-events-none translate-x-6 opacity-0",
       )}
@@ -59,7 +61,7 @@ export function ThumbIndex({ tabs }: { tabs: ThumbTab[] }) {
                 href={`#${tab.id}`}
                 aria-current={active ? "location" : undefined}
                 tabIndex={shown ? 0 : -1}
-                className={cn(
+                className={clsx(
                   "flex h-9 items-center gap-3 rounded-l-[10px] border border-r-0 pr-4 pl-4 text-[13px] font-medium transition-[width,background-color,color] duration-200 ease-out-quint",
                   active
                     ? "w-[158px] border-ink bg-ink text-paper"
