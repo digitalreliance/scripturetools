@@ -1,6 +1,6 @@
 import { Wordmark } from "@/components/brand/BrandMark";
 import { GitHubMark, XMark } from "@/components/brand/SocialMarks";
-import { newIssueUrl, REPO_URL, xProfileUrl } from "@/lib/contribute";
+import { CONTRIBUTING_URL, newIssueUrl, REPO_URL, xProfileUrl } from "@/lib/contribute";
 import { SITE } from "@/lib/site";
 
 const link = "transition-colors hover:text-ink";
@@ -34,12 +34,12 @@ export function SiteFooter() {
                   </a>
                 </li>
                 <li>
-                  <a className={link} href={REPO_URL}>
+                  <a className={link} href={CONTRIBUTING_URL}>
                     Contribute
                   </a>
                 </li>
                 <li>
-                  <a className={link} href={newIssueUrl({ body: `Page: ${SITE.url}/\n\nWhat is wrong, and where?\n` })}>
+                  <a className={link} href={newIssueUrl("mistake", { page: `${SITE.url}/` })}>
                     Report a mistake
                   </a>
                 </li>

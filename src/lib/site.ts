@@ -20,7 +20,7 @@ export const SITE = {
    */
   recentStudyCount: 5,
   /** The public repository. Every "Contribute" link is built from it. */
-  repo: { owner: "digitalreliance", name: "openscripture", branch: "main" },
+  repo: { owner: "digitalreliance", name: "scripture", branch: "main" },
   /**
    * The maker's X handle, without the @, for the hub's footer. Null hides the
    * link.

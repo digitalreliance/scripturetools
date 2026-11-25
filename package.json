@@ -2,6 +2,17 @@
   "name": "scripture",
   "version": "0.1.0",
   "private": true,
+  "description": "See how the Bible fits together: interactive visual Bible studies built on the King James text.",
+  "license": "MIT",
+  "homepage": "https://openscripture-mu.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digitalreliance/scripture.git"
+  },
+  "bugs": "https://github.com/digitalreliance/scripture/issues",
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

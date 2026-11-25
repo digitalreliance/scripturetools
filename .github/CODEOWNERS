@@ -1,0 +1,6 @@
+# Every change is reviewed by the maintainer. The Bible text, the datasets and
+# the pipelines that build them are listed on their own so that stays true if
+# more owners are added later.
+*               @digitalreliance
+/public/data/   @digitalreliance
+/scripts/data/  @digitalreliance

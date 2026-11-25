@@ -1,0 +1,46 @@
+name: Report a mistake
+description: A wrong verse, reference, number, label or place in a study.
+title: "Mistake: "
+labels: ["mistake"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for checking our work. Accuracy to the text matters more than anything else here.
+
+        Tip: the **Contribute** button in a study's top bar opens this form with the study and your exact view filled in.
+  - type: input
+    id: study
+    attributes:
+      label: Study
+      description: Which study, or which page of the site?
+      placeholder: Revelation's mirror
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Link to what you were looking at
+      description: The address from your browser, so we can open the same view.
+      placeholder: https://…/studies/revelation-chiasm#view=arcs
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong, and where?
+      description: Quote the verse reference, label or number as the site shows it.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: What should it be?
+      description: Give the verse or the source that shows the correct reading. If it's about a map, a date or a structure, a published source helps us most.
+    validations:
+      required: true
+  - type: checkboxes
+    id: text
+    attributes:
+      label: About the Bible text
+      options:
+        - label: I understand the site shows the King James Version (1769 standard text) as published, and that only a difference from that text counts as a text mistake.
+          required: true
