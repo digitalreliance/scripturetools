@@ -17,7 +17,7 @@
   &nbsp;·&nbsp;
   <a href="CONTRIBUTING.md">Contribute</a>
   &nbsp;·&nbsp;
-  <a href="https://github.com/digitalreliance/scripture/issues/new/choose">Report a mistake</a>
+  <a href="../../issues/new/choose">Report a mistake</a>
 </p>
 
 ---
@@ -132,9 +132,9 @@ You don't need to write code to help. The most valuable contributions are
 often a careful eye: a verse reference that's off by one, a label that reads
 more into the text than is there, a place on a map with a better source.
 
-- **[Report a mistake](https://github.com/digitalreliance/scripture/issues/new?template=report-a-mistake.yml)** in a study's text, data or labels
-- **[Suggest a study](https://github.com/digitalreliance/scripture/issues/new?template=suggest-a-study.yml)** or an improvement to one
-- **[Tell us something is broken](https://github.com/digitalreliance/scripture/issues/new?template=something-is-broken.yml)**
+- **[Report a mistake](../../issues/new?template=report-a-mistake.yml)** in a study's text, data or labels
+- **[Suggest a study](../../issues/new?template=suggest-a-study.yml)** or an improvement to one
+- **[Tell us something is broken](../../issues/new?template=something-is-broken.yml)**
 - **Build something.** Start with [CONTRIBUTING.md](CONTRIBUTING.md)
 
 Every study also has a **Contribute** button in its top bar that opens these

@@ -52,7 +52,17 @@ export function SiteFooter() {
               <a className={iconLink} href={xProfileUrl(SITE.xHandle)} aria-label={`@${SITE.xHandle} on X`}>
                 <XMark className="size-[15px]" />
               </a>
-            ) : null}
+            ) : (
+              // No account yet: the mark holds its place, says so, and goes nowhere.
+              <span
+                role="img"
+                aria-label={`${SITE.name} on X, coming soon`}
+                title="Coming soon"
+                className="inline-flex size-9 cursor-default items-center justify-center text-ink-faint"
+              >
+                <XMark className="size-[15px]" />
+              </span>
+            )}
             <a className={iconLink} href={REPO_URL} aria-label={`${SITE.name} on GitHub`}>
               <GitHubMark />
             </a>

@@ -61,3 +61,5 @@ Read `node_modules/next/dist/docs/` when unsure; this version differs from older
   label everything that comes from outside the text.
 - Contribute links (GitHub issue forms in `.github/ISSUE_TEMPLATE`) are built in
   `src/lib/contribute.ts`; keep their field ids in step with the forms.
+- The repository's owner is set once, in `SITE.repo` (`src/lib/site.ts`). Docs link to issues
+  relatively (`../../issues/...`); `repository.test.ts` lists any file still naming an old owner.

@@ -80,9 +80,9 @@ You don't need to write code.
 
 | I want to… | Do this |
 |---|---|
-| Report a wrong verse, number, label or place | [Report a mistake](https://github.com/digitalreliance/scripture/issues/new?template=report-a-mistake.yml). Use the **Contribute** button in a study to fill in the study and your exact view. |
-| Suggest a new study or an improvement | [Suggest a study](https://github.com/digitalreliance/scripture/issues/new?template=suggest-a-study.yml) |
-| Report something broken | [Something is broken](https://github.com/digitalreliance/scripture/issues/new?template=something-is-broken.yml) |
+| Report a wrong verse, number, label or place | [Report a mistake](../../issues/new?template=report-a-mistake.yml). Use the **Contribute** button in a study to fill in the study and your exact view. |
+| Suggest a new study or an improvement | [Suggest a study](../../issues/new?template=suggest-a-study.yml) |
+| Report something broken | [Something is broken](../../issues/new?template=something-is-broken.yml) |
 | Fix a bug or build a study | Read on |
 
 Look for issues labelled **good first issue** if you'd like somewhere to start.
