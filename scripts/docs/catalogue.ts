@@ -20,6 +20,9 @@ export const GALLERY_END = "<!-- studies:end -->";
 const COLUMNS = 3;
 const THUMB_WIDTH = 280;
 
+/** The README's cover picture: the top of the index page. */
+export const COVER_IMAGE = "docs/images/cover.jpg";
+
 /** Where a study's picture is kept, relative to the repository root. */
 export function previewImagePath(slug: string): string {
   return `docs/images/studies/${slug}.jpg`;
