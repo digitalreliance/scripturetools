@@ -1,12 +1,22 @@
+/** The live site. */
+const LIVE_URL = "https://scripturetools.vercel.app";
+
 /** Brand and site-wide constants. Rename the product here. */
 export const SITE = {
   name: "Scripture",
   tagline: "See how the Bible fits together.",
   description:
     "Interactive maps, diagrams, timelines and symbols for studying the Bible, built on the King James text.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  /**
+   * The address absolute links are built on: link-preview images, the footer's
+   * "Report a mistake" link. Production builds use the live site unless
+   * NEXT_PUBLIC_SITE_URL says otherwise; `next dev` uses localhost.
+   */
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.NODE_ENV === "production" ? LIVE_URL : "http://localhost:3000"),
   /** The live site, for links written into the README and docs. */
-  liveUrl: "https://scripturetools.vercel.app",
+  liveUrl: LIVE_URL,
   /** Below this width a desktop browser window is considered cramped. */
   minDesktopWidth: 1024,
   /** Layout width used for the scaled desktop preview on phones and tablets. */

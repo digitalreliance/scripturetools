@@ -6,6 +6,7 @@ import { BOOKS } from "@/lib/bible/canon";
 import { VERSE_COUNTS } from "@/lib/bible/generated/kjv-meta";
 import { loadChapterArcs } from "@/lib/xrefs/client";
 import type { ChapterArcs } from "@/lib/xrefs/types";
+import { arcAlpha, chapterBook, layout, type Geometry } from "./arc-geometry";
 import { ArcLight, arcSeed, FLOATS_PER_ARC, halfEllipseLength, type LightArcs } from "./arc-light";
 import { BOOK_GROUPS, CANON_GROUPS, groupColor } from "./canon-groups";
 
@@ -13,7 +14,6 @@ const HEIGHT = 280;
 /** Baseline of the spine; arcs rise above it, chapter bars hang below. */
 const BASE = 214;
 const BAR_MAX = 50;
-const BOOK_GAP = 2.4; // in chapter widths
 const WEAVE_MS = 2400;
 const MAX_VERSES = 176; // Psalm 119
 /** Resting arcs settle to this alpha once the light is running, leaving it room to shine. */
@@ -24,46 +24,6 @@ const REST_SETTLE = 1.6;
 /** Canon group colours in the order the light's shader indexes them. */
 const PALETTE = CANON_GROUPS.map((g) => g.color);
 const BOOK_GROUP_INDEX = BOOK_GROUPS.map((group) => CANON_GROUPS.findIndex((g) => g.id === group));
-
-/** Resting alpha of an arc: stronger links draw brighter. */
-const arcAlpha = (weight: number, maxWeight: number) => 0.04 + 0.26 * Math.sqrt(weight / maxWeight);
-
-interface Geometry {
-  width: number;
-  /** Centre x of each global chapter index. */
-  chapterX: Float32Array;
-  unit: number;
-  /** [start, end] x of each book. */
-  books: [number, number][];
-}
-
-function layout(width: number): Geometry {
-  const units = BOOKS.reduce((n, b) => n + b.chapters, 0) + (BOOKS.length - 1) * BOOK_GAP;
-  const unit = width / units;
-  const chapterX = new Float32Array(1189);
-  const books: [number, number][] = [];
-  let cursor = 0;
-  let index = 0;
-  BOOKS.forEach((book, b) => {
-    if (b > 0) cursor += BOOK_GAP;
-    const start = cursor * unit;
-    for (let c = 0; c < book.chapters; c++) {
-      chapterX[index++] = (cursor + 0.5) * unit;
-      cursor += 1;
-    }
-    books.push([start, cursor * unit]);
-  });
-  return { width, chapterX, unit, books };
-}
-
-const chapterBook = (() => {
-  const out = new Uint8Array(1189);
-  let i = 0;
-  BOOKS.forEach((book, b) => {
-    for (let c = 0; c < book.chapters; c++) out[i++] = b;
-  });
-  return out;
-})();
 
 const chapterNumber = (() => {
   const out = new Uint16Array(1189);

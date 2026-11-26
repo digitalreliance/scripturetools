@@ -152,7 +152,8 @@ The essentials:
 6. When it's ready, set `status: "live"` and `released: "YYYY-MM-DD"`, and
    `preview` to the view that pictures it best (for example `view=arcs`).
 7. Update the README gallery and `docs/STUDIES.md`: with the site running
-   (`npm run build && npm start`), run `npm run docs:shots` for its picture,
+   (`npm run build && npm start`), run `npm run docs:shots` for its picture (it also
+   refreshes the README's cover),
    then `npm run docs:studies`. A test fails until both are up to date.
 
 ## Pull requests

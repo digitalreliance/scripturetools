@@ -39,6 +39,8 @@ export const metadata: Metadata = {
     title: SITE.name,
     description: SITE.description,
   },
+  // The picture itself is app/opengraph-image.tsx; X uses it too.
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
