@@ -1,6 +1,6 @@
-# Contributing to Scripture
+# Contributing to Scripture Tools
 
-Thank you for wanting to help. Scripture is a set of visual tools for studying
+Thank you for wanting to help. Scripture Tools is a set of visual tools for studying
 the Bible, and it gets better every time someone checks a reference, improves
 a map or builds a new study. This guide explains what we're making, what we
 will and won't accept, and how to get your change in.
@@ -12,7 +12,7 @@ will and won't accept, and how to get your change in.
 >
 > Deuteronomy 4:2
 
-Scripture makes tools for reading the Bible. It does not add to it, take from
+Scripture Tools makes tools for reading the Bible. It does not add to it, take from
 it, or speak for it. Please read these three commitments before anything else;
 every contribution is reviewed against them.
 

@@ -1,6 +1,6 @@
 # Security
 
-Scripture is a static website: it has no accounts, no database and no server
+Scripture Tools is a static website: it has no accounts, no database and no server
 code, and it stores nothing about its visitors. Security problems are still
 possible, for example in a dependency or in how a page handles a link.
 

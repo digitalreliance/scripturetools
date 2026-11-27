@@ -52,7 +52,7 @@ export function DeviceGate() {
               Made for a larger screen
             </h1>
             <p id="device-gate-body" className="mt-4 text-[17px] leading-relaxed text-cover-muted">
-              {SITE.name}&rsquo;s maps, diagrams and timelines need the room of a laptop or
+              The maps, diagrams and timelines in {SITE.name} need the room of a laptop or
               desktop. Send yourself this link and open it on a computer.
             </p>
 

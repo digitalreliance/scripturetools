@@ -1,6 +1,6 @@
 # Code of conduct
 
-Scripture brings together people who love the Bible and who often read it
+Scripture Tools brings together people who love the Bible and who often read it
 differently. That is a gift, and it needs care. This code describes how we
 treat one another in issues, pull requests, discussions and anywhere else the
 project meets.
