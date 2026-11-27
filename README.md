@@ -2,7 +2,7 @@
   <img src="docs/images/cover.jpg" alt="Scripture's index page: the King James Bible's cross references drawn as arcs between its 1,189 chapters, coloured by section from Genesis to Revelation" width="100%">
 </p>
 
-<h1 align="center">Scripture</h1>
+<h1 align="center">Scripture Tools</h1>
 
 <p align="center">
   <strong>See how the Bible fits together.</strong><br>
