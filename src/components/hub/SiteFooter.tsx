@@ -1,5 +1,5 @@
 import { Wordmark } from "@/components/brand/BrandMark";
-import { VerseText } from "@/components/bible/VerseText";
+import { stripMarkup } from "@/lib/bible/markup";
 import { formatReference, toReference } from "@/lib/bible/reference";
 import { readPassage } from "@/lib/bible/server";
 import { readerHref } from "@/lib/routes";
@@ -13,8 +13,8 @@ const iconLink =
 
 /**
  * The hub's last line: the wordmark (back to the cover), the ways in for
- * contributors, and where to follow the project, then the dedication: the
- * motto and Psalm 115:1, read from the KJV data. The Sources section above it
+ * contributors, where to follow the project, and the dedication: the motto,
+ * linked to Psalm 115:1 with the verse (read from the KJV data) as its title. The Sources section above it
  * carries the credits.
  */
 export function SiteFooter() {
@@ -29,7 +29,7 @@ export function SiteFooter() {
               <Wordmark className="text-[14px]" />
             </a>
             <nav aria-label="Footer">
-              <ul className="flex items-center gap-[22px]">
+              <ul className="flex items-center gap-[22px] xl:whitespace-nowrap">
                 <li>
                   <a className={link} href="#contents">
                     All studies
@@ -74,25 +74,22 @@ export function SiteFooter() {
               <GitHubMark />
             </a>
             <span aria-hidden className="mx-2.5 h-4 w-px bg-paper-line" />
-            <p>
-              © {SITE.copyrightYear} {SITE.name}. Free and open source.
+            {/* Below xl the motto takes a second line inside the row, so the links keep their room. */}
+            <p className="whitespace-nowrap">
+              © {SITE.copyrightYear} {SITE.name}. Free and open source.{" "}
+              <br className="xl:hidden" />
+              <a
+                lang="la"
+                className={`${link} italic`}
+                href={readerHref(ref.book, ref.chapter, ref.verse)}
+                title={`“${stripMarkup(verse.t)}” ${formatReference(ref)}`}
+                aria-label={`${SITE.dedication.motto}: ${SITE.dedication.english}. ${formatReference(ref)}`}
+              >
+                {SITE.dedication.motto}
+              </a>
             </p>
           </div>
         </div>
-        <p className="mx-auto max-w-[72ch] text-center text-[13px] leading-[1.6] text-ink-muted">
-          <span lang="la" className="font-medium tracking-[0.14em] text-ink uppercase">
-            {SITE.dedication.motto}
-          </span>
-          <span aria-hidden className="mx-2">
-            ·
-          </span>
-          &ldquo;
-          <VerseText text={verse.t} />
-          &rdquo;{" "}
-          <a className={link} href={readerHref(ref.book, ref.chapter, ref.verse)}>
-            {formatReference(ref)}
-          </a>
-        </p>
       </div>
     </footer>
   );
