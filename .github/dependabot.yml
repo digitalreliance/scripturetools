@@ -8,6 +8,15 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # typescript-eslint (used by `npm run lint`) doesn't support TypeScript 7
+      # yet. Remove this once it does.
+      - dependency-name: typescript
+        versions: [">=7"]
+      # Node's type labels should match the Node version the site runs on (22);
+      # move them up by hand when that changes.
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directory: /
     schedule:
