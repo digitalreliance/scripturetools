@@ -14,8 +14,10 @@ const iconLink =
 /**
  * The hub's last line: the wordmark (back to the cover), the ways in for
  * contributors, where to follow the project, and the dedication: the motto,
- * linked to Psalm 115:1 with the verse (read from the KJV data) as its title. The Sources section above it
- * carries the credits.
+ * linked to Psalm 115:1 with the verse (read from the KJV data) as its title.
+ * One row where it fits; in a narrower window the icons and copyright wrap
+ * to a second row, right-aligned, so no link breaks mid-phrase. The Sources
+ * section above it carries the credits.
  */
 export function SiteFooter() {
   const ref = toReference(SITE.dedication.verse);
@@ -23,13 +25,13 @@ export function SiteFooter() {
   return (
     <footer className="bg-paper text-ink">
       <div className="mx-auto max-w-[1320px] pr-[188px] pb-8 pl-14">
-        <div className="flex h-16 items-center justify-between gap-8 border-t border-paper-line text-[13px] text-ink-muted">
-          <div className="flex min-w-0 items-center gap-7">
+        <div className="flex min-h-16 flex-wrap items-center justify-between gap-x-8 border-t border-paper-line py-[13.5px] text-[13px] text-ink-muted">
+          <div className="flex items-center gap-7">
             <a href="#cover" aria-label={`${SITE.name}, back to the top`} className="rounded-control text-ink">
               <Wordmark className="text-[14px]" />
             </a>
             <nav aria-label="Footer">
-              <ul className="flex items-center gap-[22px] xl:whitespace-nowrap">
+              <ul className="flex items-center gap-[22px] whitespace-nowrap">
                 <li>
                   <a className={link} href="#contents">
                     All studies
@@ -54,7 +56,7 @@ export function SiteFooter() {
             </nav>
           </div>
 
-          <div className="flex shrink-0 items-center gap-1.5">
+          <div className="ml-auto flex shrink-0 items-center gap-1.5">
             {SITE.xHandle ? (
               <a className={iconLink} href={xProfileUrl(SITE.xHandle)} aria-label={`@${SITE.xHandle} on X`}>
                 <XMark className="size-[15px]" />
@@ -74,10 +76,8 @@ export function SiteFooter() {
               <GitHubMark />
             </a>
             <span aria-hidden className="mx-2.5 h-4 w-px bg-paper-line" />
-            {/* Below xl the motto takes a second line inside the row, so the links keep their room. */}
             <p className="whitespace-nowrap">
               © {SITE.copyrightYear} {SITE.name}. Free and open source.{" "}
-              <br className="xl:hidden" />
               <a
                 lang="la"
                 className={`${link} italic`}

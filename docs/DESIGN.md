@@ -98,8 +98,11 @@ single accented word inside a headline, no `→` glued to button text, no
   status, not from identical cards.
 - The pages end with **Sources** (every credit) and then the hub's only
   footer, one quiet row: the wordmark (back to the cover), All studies,
-  Sources and licences, Contribute, Report a mistake, then X and GitHub and
-  the copyright. Studies have no footer; their way in is the Contribute menu.
+  Sources and licences, Contribute, Report a mistake, then X and GitHub, the
+  copyright and *Soli Deo Gloria* (linked to Psalm 115:1). In a window too
+  narrow for one row, X, GitHub and the copyright wrap to a second row,
+  right-aligned; links never break mid-phrase. Studies have no footer; their
+  way in is the Contribute menu.
 - Under the cover, a **carousel** presents the newest live studies (up to
   `SITE.recentStudyCount`, five; most recently released or updated first) one
   plate at a time. Each plate plays its demo as it arrives. A row of tabs
