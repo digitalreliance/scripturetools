@@ -20,6 +20,8 @@
   <a href="../../issues/new/choose">Report a mistake</a>
 </p>
 
+<p align="center"><em>Soli Deo Gloria</em>: to God alone be the glory.</p>
+
 ---
 
 ## What this is
@@ -171,3 +173,13 @@ Read next:
 The MIT licence covers the code. The datasets keep their own licences, listed
 above and in [docs/data/](docs/data/); if you reuse them, credit them as their
 licences ask.
+
+## Soli Deo Gloria
+
+> Not unto us, O LORD, not unto us, but unto thy name give glory, for thy
+> mercy, *and* for thy truth’s sake.
+>
+> Psalm 115:1
+
+This work is offered to the glory of God alone. It carries no one's name, and
+everyone who contributes does so on the same terms.

@@ -53,6 +53,15 @@ export function Cover() {
               Browse studies
             </a>
           </div>
+          <p className="mt-6 text-[13px] text-cover-muted">
+            <span lang="la" className="font-medium tracking-[0.14em] uppercase">
+              {SITE.dedication.motto}
+            </span>
+            <span aria-hidden className="mx-2">
+              ·
+            </span>
+            {SITE.dedication.english}
+          </p>
         </div>
 
         <div className="pb-14">

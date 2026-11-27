@@ -1,4 +1,8 @@
 import { Wordmark } from "@/components/brand/BrandMark";
+import { VerseText } from "@/components/bible/VerseText";
+import { formatReference, toReference } from "@/lib/bible/reference";
+import { readPassage } from "@/lib/bible/server";
+import { readerHref } from "@/lib/routes";
 import { GitHubMark, XMark } from "@/components/brand/SocialMarks";
 import { CONTRIBUTING_URL, newIssueUrl, REPO_URL, xProfileUrl } from "@/lib/contribute";
 import { SITE } from "@/lib/site";
@@ -9,10 +13,13 @@ const iconLink =
 
 /**
  * The hub's last line: the wordmark (back to the cover), the ways in for
- * contributors, and where to follow the project. Kept to one quiet row; the
- * Sources section above it carries the credits.
+ * contributors, and where to follow the project, then the dedication: the
+ * motto and Psalm 115:1, read from the KJV data. The Sources section above it
+ * carries the credits.
  */
 export function SiteFooter() {
+  const ref = toReference(SITE.dedication.verse);
+  const [verse] = readPassage(ref);
   return (
     <footer className="bg-paper text-ink">
       <div className="mx-auto max-w-[1320px] pr-[188px] pb-8 pl-14">
@@ -72,6 +79,20 @@ export function SiteFooter() {
             </p>
           </div>
         </div>
+        <p className="mx-auto max-w-[72ch] text-center text-[13px] leading-[1.6] text-ink-muted">
+          <span lang="la" className="font-medium tracking-[0.14em] text-ink uppercase">
+            {SITE.dedication.motto}
+          </span>
+          <span aria-hidden className="mx-2">
+            ·
+          </span>
+          &ldquo;
+          <VerseText text={verse.t} />
+          &rdquo;{" "}
+          <a className={link} href={readerHref(ref.book, ref.chapter, ref.verse)}>
+            {formatReference(ref)}
+          </a>
+        </p>
       </div>
     </footer>
   );

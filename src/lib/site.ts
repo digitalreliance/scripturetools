@@ -42,6 +42,16 @@ export const SITE = {
    * is one, the footer shows the X mark marked "coming soon", with no link.
    */
   xHandle: null as string | null,
+  /**
+   * The project's dedication, shown on the cover, in the footer and in the
+   * README. The motto is the historic Latin phrase with its English; the verse
+   * is read from the KJV data, never copied.
+   */
+  dedication: {
+    motto: "Soli Deo Gloria",
+    english: "To God alone be the glory",
+    verse: "PSA 115:1",
+  },
   /** First year in the copyright line. */
   copyrightYear: 2026,
 } as const;
