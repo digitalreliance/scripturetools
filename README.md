@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://scripturetools.vercel.app">Open Scripture</a>
+  <a href="https://scripturetools.vercel.app">Scripture Tools</a>
   &nbsp;·&nbsp;
   <a href="#the-text-stays-as-it-is">Our principles</a>
   &nbsp;·&nbsp;
