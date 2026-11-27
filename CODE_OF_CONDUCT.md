@@ -36,7 +36,7 @@ block people who don't follow this code, in proportion to what happened. We'll
 explain the decision when it's safe and useful to do so.
 
 To report a problem privately, contact the maintainer at
-**[CONTACT EMAIL]**. Reports are kept confidential.
+**[plate.collage5r@icloud.com](mailto:plate.collage5r@icloud.com)**. Reports are kept confidential.
 
 ## Scope
 
