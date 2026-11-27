@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# Scripture — project guide
+# Scripture Tools — project guide
 
 A desktop-first web app: one index page of interactive visual Bible studies
 (maps, diagrams, timelines, symbols, typography), each study a self-contained

@@ -1,13 +1,13 @@
 # Design system
 
-Scripture is a set of precise instruments for studying the Bible, presented the
+Scripture Tools is a set of precise instruments for studying the Bible, presented the
 way a technology company presents its products: crisp, fast, keyboard-friendly.
 What keeps it from looking like every other dark SaaS page is that its devices
 come from the printed Bible itself.
 
 ## Principles
 
-1. **Color belongs to Scripture.** Chrome is leather, paper and ink. Hue appears
+1. **Color belongs to Scripture Tools.** Chrome is leather, paper and ink. Hue appears
    only where it encodes data (canon sections, chiasm levels, map regions) or a
    study's own identity. Never as decoration, never as a gradient wash.
 2. **The book is the interface.** Borrow devices from printed Bibles and make each

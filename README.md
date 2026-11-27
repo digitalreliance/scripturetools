@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/cover.jpg" alt="Scripture's index page: the King James Bible's cross references drawn as arcs between its 1,189 chapters, coloured by section from Genesis to Revelation" width="100%">
+  <img src="docs/images/cover.jpg" alt="The index page: the King James Bible's cross references drawn as arcs between its 1,189 chapters, coloured by section from Genesis to Revelation" width="100%">
 </p>
 
 <h1 align="center">Scripture Tools</h1>
@@ -26,7 +26,7 @@
 
 ## What this is
 
-Scripture is a growing set of **studies**: visual, interactive tools that help
+Scripture Tools is a growing set of **studies**: visual, interactive tools that help
 you see what is already in the Bible. Each study takes one thing (the shape of a
 book, a journey, a family line, a pattern of words) and draws it, with every
 verse one click away.

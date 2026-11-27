@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: Read our principles first
     url: https://github.com/digitalreliance/scripturetools/blob/main/CONTRIBUTING.md#start-here-the-text-stays-as-it-is
-    about: Scripture makes tools for seeing what is in the Bible. It never changes the text and doesn't teach a doctrine or a reading.
+    about: Scripture Tools makes tools for seeing what is in the Bible. It never changes the text and doesn't teach a doctrine or a reading.
   - name: Report a security problem privately
     url: https://github.com/digitalreliance/scripturetools/security/advisories/new
     about: Please don't open a public issue for a security problem.

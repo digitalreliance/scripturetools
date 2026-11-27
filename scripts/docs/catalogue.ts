@@ -107,7 +107,7 @@ export function renderCatalogue(studies: readonly Study[], categories: readonly 
     "",
     "# Studies",
     "",
-    `Every study in Scripture, by section: ${live.length} live and ` +
+    `Every study in ${SITE.name}, by section: ${live.length} live and ` +
       `${studies.length - live.length} planned. Live studies open on [the site](${SITE.liveUrl}); ` +
       "planned ones are on the way. To suggest one, use the " +
       "[study form](../../../issues/new?template=suggest-a-study.yml).",

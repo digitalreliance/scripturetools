@@ -3,7 +3,8 @@ const LIVE_URL = "https://scripturetools.vercel.app";
 
 /** Brand and site-wide constants. Rename the product here. */
 export const SITE = {
-  name: "Scripture",
+  /** The project's name. Rename the project by changing this one value. */
+  name: "Scripture Tools",
   tagline: "See how the Bible fits together.",
   description:
     "Interactive maps, diagrams, timelines and symbols for studying the Bible, built on the King James text.",

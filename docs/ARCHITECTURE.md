@@ -1,6 +1,6 @@
 # Architecture
 
-Scripture is one index page that opens onto many small, self-contained
+Scripture Tools is one index page that opens onto many small, self-contained
 "studies": interactive maps, diagrams, timelines and symbol guides, each built
 on the public-domain King James text. This document records the stack, how the
 pieces fit, and why.

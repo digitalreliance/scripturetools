@@ -2,7 +2,7 @@
 
 # Studies
 
-Every study in Scripture, by section: 1 live and 24 planned. Live studies open on [the site](https://scripturetools.vercel.app); planned ones are on the way. To suggest one, use the [study form](../../../issues/new?template=suggest-a-study.yml).
+Every study in Scripture Tools, by section: 1 live and 24 planned. Live studies open on [the site](https://scripturetools.vercel.app); planned ones are on the way. To suggest one, use the [study form](../../../issues/new?template=suggest-a-study.yml).
 
 ## The text
 
