@@ -54,16 +54,19 @@ src/
   components/
     shell/             StudyShell: the frame every study shares
     hub/               the index page
+    offline/           registering the service worker, and saying what is saved
     bible/             VerseText, Passage
     device/            device sorting before first paint, and the phone gate
     primitives/        Kbd and other tiny pieces
   lib/
     bible/             canon, references, versification, markup, loaders
     xrefs/             cross-reference loaders
+    offline/           what the service worker keeps, and the browser's side of it
     hooks/             shared hooks (hash state)
     routes.ts          every internal URL
 scripts/data/          dataset pipelines
 public/data/           generated datasets
+public/sw.js           the service worker: offline reading
 docs/                  this file, DESIGN.md, data/ (sources and licences)
 ```
 
@@ -88,8 +91,10 @@ A study (micro-app) is a feature folder plus a thin route. To add one:
    under `pointer-coarse:`, hover gated with `canHover`, a button for every shortcut),
    and try it at 1440×900, iPad landscape (1180×820) and iPad upright (820×1180),
    by touch as well as by mouse.
-7. Flip the status to `live` and set `released` to that day (`YYYY-MM-DD`). The hub and the ⌘K
-   palette pick it up automatically. (`SITE.showPlannedStudies` in `src/lib/site.ts` controls
+7. Flip the status to `live` and set `released` to that day (`YYYY-MM-DD`). The hub, the ⌘K
+   palette and offline reading pick it up automatically. If the study fetches a dataset
+   after it loads (rather than reading it at build time), add the dataset to
+   `offlineManifest()` in `src/lib/offline/manifest.ts` so it opens offline too. (`SITE.showPlannedStudies` in `src/lib/site.ts` controls
    whether planned studies are listed at all.)
 8. Later, when a change is worth a second look (a new view, more data, not a fix), set
    `updated` to that day. The hub's carousel shows the `SITE.recentStudyCount` (five) most
@@ -143,7 +148,62 @@ fits any width). The numbers live in
 are in `docs/DESIGN.md` under **Desk and iPad**.
 
 A web app manifest and an Apple touch icon let an iPad keep the site on its
-home screen and open it full screen.
+home screen and open it full screen, and a service worker keeps it readable
+there without a connection (below).
+
+## Offline reading
+
+A study opened from an iPad's home screen on a plane works as it does at a
+desk. The site is static, so this needs no server: a service worker
+(`public/sw.js`, registered on every page by
+`src/components/offline/ServiceWorker.tsx`) saves a copy on the device the
+first time someone visits, and answers from it when there is no connection.
+
+**What it keeps.** The pages `/offline.json` lists: the index, every live
+study, and the offline page. That list is built from the registry at build
+time (`offlineManifest()` in `src/lib/offline/manifest.ts`), so a study is
+kept from the day it goes live. The worker reads each page's HTML for the
+scripts, stylesheets, fonts and icons it loads, then follows each script and
+stylesheet to the files it names, so code that loads later (the ⌘K palette)
+is kept too. It also keeps the datasets the list names (the cover's
+cross-reference arcs) and any dataset a page fetches along the way. The whole
+copy was about 2 MB uncompressed in November 2026, most of it the two pages'
+HTML (each carries its study's data) and the fonts.
+
+**How it answers.**
+
+| Request | Answer |
+|---|---|
+| A page | The network, so a connected reader always gets the current site. With no connection, or no answer within 3 s, the saved copy. A page that isn't kept leads to `/offline`, which says so and lists what is. |
+| `/_next/static/…` | The saved copy first: Next.js names these files by their contents, so a saved one is never stale. |
+| `/data/…`, icons | The network, falling back to the saved copy; datasets are kept as they arrive. |
+| Next.js's own data requests (RSC) | Not touched. When one fails offline, Next.js loads the whole page instead, and the worker answers that. |
+
+**Keeping up to date.** When a kept page arrives from the network, the
+worker compares the files it loads with the saved copy's. The same files: it
+keeps the fresh page. Different files (a new deploy), or a copy more than a
+day old: it saves everything again, files first and pages second, and only
+then deletes what no saved page uses. A save cut short leaves the previous
+copy whole, so a saved page never points at a missing file. A change to
+`public/sw.js` itself installs a new worker, which saves the copy before it
+takes over. There is no build step and no list of files to keep in step:
+the worker finds them in what the site serves.
+
+**What the reader sees.** The hub's Sources say the site works offline,
+with a line for this device ("Saved on this device today"). A study's
+status bar starts with "Offline" while there is no connection, and the
+Contribute menu says its GitHub links need one. Opened from the home
+screen, the site asks the browser to keep its storage (`persist()`), so the
+copy isn't cleared when the device runs short of space. Under `next dev`
+nothing is registered, and a worker left by `next start` on the same port is
+removed, so development never runs on yesterday's code.
+
+**Testing it.** `src/lib/offline/__tests__/sw.test.ts` runs `public/sw.js`
+against a stand-in browser: saving, answering offline, a deploy, a save cut
+short. In a real browser, run `npm run build && npm start`, open the site,
+wait for "Saved on this device" under Sources, then turn the network off in
+the developer tools (or stop the server) and reload. Development builds
+don't save anything.
 
 ## Budgets
 
@@ -151,6 +211,10 @@ home screen and open it full screen.
   below; largest paint under 2 s on desktop broadband.
 - A study: under 250 KB of its own JavaScript; data fetched lazily and cached by
   the CDN.
+- The offline copy: every visitor's device saves the whole site once, in the
+  background after the first page loads. While it stays near today's 2 MB,
+  every live study is kept. A study with a large dataset of its own (a map's
+  tiles) should be saved when it is first opened instead of with the rest.
 - 60 fps for hover, touch, pan and zoom, on an iPad as on a computer. Above
   ~2,000 marks, draw to canvas.
 - Ambient motion costs nothing when no one is looking: the cover's light stops
@@ -222,8 +286,8 @@ Every dataset gets a note in `docs/data/` and an on-screen credit wherever it ap
 ## Roadmap
 
 1. **Now:** the hub (the index), layouts for desk and iPad with a gate for
-   phones, the KJV and its cross references installed as data, and the first
-   study: Revelation's mirror.
+   phones, offline reading from the home screen, the KJV and its cross
+   references installed as data, and the first study: Revelation's mirror.
 2. **Next:** one study at a time, chosen by the project owner. Candidates: the
    KJV reader (data and library are ready), the cross-reference atlas, the maps
    foundation (MapLibre, places, Paul's journeys), the kings timeline, the word
@@ -233,7 +297,8 @@ Every dataset gets a note in `docs/data/` and an on-screen credit wherever it ap
    write studies (MDX in the repo until then); an "ask about this passage" helper
    that answers only from the KJV and the study's data, with citations.
 4. **After that:** original-language interlinears, more translations, other
-   languages, offline reading.
+   languages. Once the reader exists, a choice to keep the whole KJV (about
+   5 MB) on the device for reading offline.
 
 ## Decisions
 
@@ -247,5 +312,14 @@ Every dataset gets a note in `docs/data/` and an on-screen credit wherever it ap
 - **Registry dates over git history.** The carousel's order comes from `released` and
   `updated` in the registry, not from commit dates: builds stay reproducible (CI and
   Vercel clone shallowly), and a typo fix doesn't count as news.
+- **A hand-written service worker over Workbox or Serwist.** The site is
+  static and its needs are small: keep a few pages and what they load. One file
+  of about 400 lines, much of it comments, with no build step and tested in
+  `sw.test.ts`, is easier to read and to trust than a plugin tied to the bundler, and it finds the files to keep
+  in the pages themselves instead of in a build manifest.
+- **Network first for pages.** Online, a reader always gets the current
+  deploy; the saved copy is for when there is no connection, or none worth
+  waiting 3 s for. Serving the copy first would be faster on a good
+  connection but would show the previous deploy until the next visit.
 - **MapLibre over Mapbox or Cesium.** No keys or metered billing; Cesium's globe
   and terrain are more than a Bible atlas needs.

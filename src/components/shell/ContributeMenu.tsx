@@ -2,10 +2,11 @@
 
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { DropdownMenu } from "radix-ui";
-import { ArrowUpRight, BookOpenText, Code, Flag, Lightbulb } from "lucide-react";
+import { ArrowUpRight, BookOpenText, CloudOff, Code, Flag, Lightbulb } from "lucide-react";
 import { GitHubMark } from "@/components/brand/SocialMarks";
 import { CONTRIBUTING_URL, newIssueUrl, REPO_URL, sourceUrl, studyIssueUrl, studySourcePath } from "@/lib/contribute";
 import { cn } from "@/lib/cn";
+import { useOnline } from "@/lib/offline/client";
 import { SITE } from "@/lib/site";
 import { ToolButton } from "./parts";
 import styles from "./ContributeMenu.module.css";
@@ -192,6 +193,7 @@ function MenuFrame({
         >
           {header}
           {headerRule ? <DropdownMenu.Separator className="mx-1 mb-1.5 h-px bg-s-line" /> : null}
+          <OfflineNote />
           {children}
           <DropdownMenu.Separator className="mx-1 my-1.5 h-px bg-s-line" />
           <MenuLink
@@ -203,6 +205,18 @@ function MenuFrame({
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     </span>
+  );
+}
+
+/** Every link here opens GitHub; offline, say so before the reader tries one. */
+function OfflineNote() {
+  const online = useOnline();
+  if (online) return null;
+  return (
+    <p className="mx-1 mb-1.5 flex items-start gap-2 rounded-control bg-s-canvas px-2.5 py-2 text-[12px] leading-[1.45] text-s-muted [&_svg]:size-3.5">
+      <CloudOff aria-hidden className="mt-px shrink-0" />
+      You&rsquo;re offline. These links open GitHub, so they need a connection.
+    </p>
   );
 }
 

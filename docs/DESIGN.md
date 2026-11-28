@@ -142,10 +142,10 @@ splitting the screen never changes the answer:
 | Phone | touch-first, shorter side under 600 px, even held sideways | the index, laid out for a phone; on a study, the device gate (`html[data-device="phone"]`) |
 
 Pages a phone can browse are listed in `PHONE_PAGES`
-(`src/components/device/phone-pages.ts`); today that is the index. While one is
-on screen, `<html>` carries `data-phone-page` (set by the boot script on first
-load and by `DeviceRoute` as the reader moves between pages), and the gate
-stays away. A new page that works at phone width joins the list; a study
+(`src/components/device/phone-pages.ts`); today that is the index and the
+offline page. While one is on screen, `<html>` carries `data-phone-page` (set
+by the boot script on first load and by `DeviceRoute` as the reader moves
+between pages), and the gate stays away. A new page that works at phone width joins the list; a study
 never does.
 
 A window narrower than `SITE.minWindowWidth` (500 px: Slide Over, a squeezed
@@ -213,6 +213,27 @@ index always shows a phone its own layout.
 Added to an iPad's home screen, the site opens full screen like an app
 (`app/manifest.ts`, `app/apple-icon.tsx`). With no address bar there, each
 study's **Share** button is how a view gets passed on.
+
+### Offline
+
+The site saves itself to the device on the first visit, so a study opened
+from the home screen works on a plane (see **Offline reading** in
+`docs/ARCHITECTURE.md`). Being offline changes as little as possible, and
+says so only where it matters:
+
+- **Studies** carry on as they are. While the device has no connection, the
+  status bar starts with **Offline** (a crossed-out cloud and the word), and
+  the Contribute menu opens with a note that its GitHub links need a
+  connection. Nothing is disabled: Share still works offline.
+- **The hub** says, under Sources, that the site works offline and how to
+  keep it on an iPad, then one line for this device, with a dot like a
+  study's status: filled when saved ("Saved on this device today"), hollow
+  while saving or when it can't be. Offline, the line says the reader is
+  reading the saved copy.
+- **A page that isn't saved** leads, offline, to `/offline`: what happened
+  ("This page isn't saved on this device"), the address they were opening,
+  **Try again** and **Go to the index**, then every page that is kept, each a
+  link that opens offline. It is laid out for phones too (`PHONE_PAGES`).
 
 ## Studies (micro-apps)
 

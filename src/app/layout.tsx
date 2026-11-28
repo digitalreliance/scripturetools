@@ -5,6 +5,7 @@ import { CommandPalette } from "@/components/command/CommandPalette";
 import { DeviceBootScript } from "@/components/device/DeviceBootScript";
 import { DeviceGate } from "@/components/device/DeviceGate";
 import { DeviceRoute } from "@/components/device/DeviceRoute";
+import { ServiceWorker } from "@/components/offline/ServiceWorker";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -43,7 +44,8 @@ export const metadata: Metadata = {
   },
   // The picture itself is app/opengraph-image.tsx; X uses it too.
   twitter: { card: "summary_large_image" },
-  // Added to an iPad's home screen, it opens full screen like an app (see app/manifest.ts).
+  // Added to an iPad's home screen, it opens full screen like an app (see app/manifest.ts),
+  // and with or without a connection (components/offline/ServiceWorker.tsx).
   appleWebApp: { capable: true, title: SITE.name, statusBarStyle: "black" },
 };
 
@@ -71,6 +73,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <DeviceRoute />
         </Suspense>
         <DeviceGate />
+        <ServiceWorker />
       </body>
     </html>
   );

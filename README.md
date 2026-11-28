@@ -34,8 +34,9 @@ verse one click away.
 Every study is its own small app with the same frame: an outline on the left,
 the picture in the middle, the verses and details on the right. It works on a
 computer or an iPad, by mouse, keyboard or touch, and an iPad can keep it on its
-home screen. On a phone you can browse every study and send one to a bigger
-screen. You can search for any study, book or verse from anywhere with
+home screen. The site saves itself to your device on your first visit, so every
+study still opens without a connection. On a phone you can browse every study
+and send one to a bigger screen. You can search for any study, book or verse from anywhere with
 <kbd>⌘K</kbd>, and every view has a link you can share.
 
 ## Studies
@@ -139,7 +140,8 @@ npm run data:xrefs   # cross references from OpenBible.info
 
 A fully static [Next.js](https://nextjs.org) site in TypeScript: every page is
 prerendered, so it loads fast, costs almost nothing to host, and has no
-accounts, tracking or database. Diagrams are SVG drawn with d3's maths, dense
+accounts, tracking or database. A small service worker keeps a copy on your
+device for reading offline. Diagrams are SVG drawn with d3's maths, dense
 pictures use Canvas and WebGL2, and the design is our own, built with Tailwind
 CSS and Radix.
 
@@ -148,6 +150,7 @@ src/app          routes, kept thin
 src/studies      one folder per study, and the registry that lists them all
 src/components   the study frame, the index page, verse text, the ⌘K palette
 src/lib          the canon, references, data loaders, site settings
+public/sw.js     the service worker that keeps the site for offline reading
 public/data      generated datasets (never edited by hand)
 scripts/data     the pipelines that build them
 scripts/docs     the README gallery and docs/STUDIES.md, from the registry

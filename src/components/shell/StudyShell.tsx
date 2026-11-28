@@ -20,6 +20,7 @@ import { HOME_HREF } from "@/lib/routes";
 import { SITE } from "@/lib/site";
 import { paletteVars, type StudyPalette } from "@/studies/palettes";
 import { ContributeMenu } from "./ContributeMenu";
+import { OfflineStatus } from "./OfflineStatus";
 import { ShareButton } from "./ShareButton";
 import styles from "./StudyShell.module.css";
 
@@ -109,7 +110,9 @@ const panelToggle =
  * to a comfortable size (Tailwind's pointer-coarse).
  *
  * `[` and `]` show and hide the outline and the inspector, and Escape puts a
- * sliding outline away. Every study gets Share and Contribute in the top bar.
+ * sliding outline away. Every study gets Share and Contribute in the top bar,
+ * and an "Offline" note at the start of the status bar while there is no
+ * connection.
  */
 export function StudyShell({
   slug,
@@ -401,7 +404,10 @@ export function StudyShell({
       </div>
 
       <footer className="scroll-none flex min-w-0 items-center gap-5 overflow-x-auto border-t border-s-line bg-s-chrome px-3 text-[12px] text-s-muted">
-        <div className="flex shrink-0 items-center gap-5">{status}</div>
+        <div className="flex shrink-0 items-center gap-5">
+          <OfflineStatus />
+          {status}
+        </div>
         <div className="ml-auto flex shrink-0 items-center gap-5">{statusEnd}</div>
       </footer>
     </div>

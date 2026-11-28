@@ -1,3 +1,4 @@
+import { OfflineCopyStatus } from "@/components/offline/OfflineCopyStatus";
 import { XREFS_CREDIT } from "@/lib/xrefs/credit";
 import { SITE } from "@/lib/site";
 import { CHART_SOURCE } from "@/studies/revelation-chiasm/data/chiasm";
@@ -52,6 +53,14 @@ export function Sources() {
             <dd className="mt-1.5 text-ink-muted">
               {SITE.name} works on a computer or a tablet, an iPad included, by mouse, trackpad, keyboard or touch. On a
               phone you can browse this page; each study offers to send itself to a bigger screen, or a scaled preview.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Works offline</dt>
+            <dd className="mt-1.5 text-ink-muted">
+              Every study is saved to your device the first time you visit, so it opens without a connection: on a
+              plane, or out of signal. On an iPad, add {SITE.name} to the home screen to open it like an app.
+              <OfflineCopyStatus className="mt-2" />
             </dd>
           </div>
         </dl>

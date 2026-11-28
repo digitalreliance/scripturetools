@@ -28,3 +28,6 @@ export function studyHref(slug: string): string {
 
 export const HOME_HREF = "/";
 export const READER_HOME_HREF = "/read";
+
+/** What the service worker shows, offline, in place of a page it hasn't kept. */
+export const OFFLINE_HREF = "/offline";

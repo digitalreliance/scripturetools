@@ -1,4 +1,4 @@
-import { HOME_HREF } from "@/lib/routes";
+import { HOME_HREF, OFFLINE_HREF } from "@/lib/routes";
 
 /**
  * Pages laid out for phones as well as for tablets and computers. A phone can
@@ -6,7 +6,7 @@ import { HOME_HREF } from "@/lib/routes";
  * Read by the boot script on first load and by DeviceRoute as the reader moves
  * between pages, which marks html[data-phone-page] on these.
  */
-export const PHONE_PAGES: readonly string[] = [HOME_HREF];
+export const PHONE_PAGES: readonly string[] = [HOME_HREF, OFFLINE_HREF];
 
 /** Set on <html> while one of PHONE_PAGES is on screen. */
 export const PHONE_PAGE_ATTRIBUTE = "data-phone-page";
