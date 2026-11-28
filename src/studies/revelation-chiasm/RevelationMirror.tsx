@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { BookOpen, ChartScatter, FoldHorizontal, Footprints, Pause, Rainbow, Rows3, X } from "lucide-react";
+import { BookOpen, ChartScatter, FoldHorizontal, Footprints, Pause, Rainbow, Rows3, Sparkles, X } from "lucide-react";
 import { Segmented, type SegmentedItem } from "@/components/shell/controls";
 import { StatusItem, ToolButton, ToolbarDivider } from "@/components/shell/parts";
 import { StudyShell } from "@/components/shell/StudyShell";
@@ -80,6 +80,7 @@ export function RevelationMirror({
   const [focusHalf, setFocusHalf] = useState<"first" | "second">("first");
   const [drawIn, setDrawIn] = useState(true);
   const [welcome, setWelcome] = useState(false);
+  const [revealInspector, setRevealInspector] = useState(0);
 
   const active = walking ? selected : (hover ?? selected);
 
@@ -311,6 +312,7 @@ export function RevelationMirror({
       sidebarLabel="Outline"
       // A walk counts as one choice, so an inspector put away during it stays away.
       selection={walking ? "walk" : selected}
+      revealInspector={revealInspector}
       inspector={
         <Inspector
           payload={payload}
@@ -348,7 +350,7 @@ export function RevelationMirror({
         {welcome ? (
           <section
             aria-labelledby="mirror-welcome"
-            className={cn(styles.sheet, "absolute bottom-6 left-6 z-20 w-[min(392px,calc(100%-3rem))] rounded-panel border border-s-line bg-s-raised p-5 shadow-float")}
+            className={cn(styles.sheet, "absolute bottom-6 left-6 z-20 w-[min(460px,calc(100%-3rem))] rounded-panel border border-s-line bg-s-raised p-5 shadow-float")}
           >
             <div className="flex items-start justify-between gap-4">
               <h2 id="mirror-welcome" className="text-[17px] leading-snug font-semibold tracking-[-0.01em] [font-stretch:108%]">
@@ -385,6 +387,18 @@ export function RevelationMirror({
                 }}
               >
                 Jump to the centre
+              </ToolButton>
+              <ToolButton
+                variant="outline"
+                className={styles.insight}
+                icon={<Sparkles aria-hidden className={styles.sparkle} />}
+                onClick={() => {
+                  dismissWelcome();
+                  setTab("about");
+                  setRevealInspector((n) => n + 1);
+                }}
+              >
+                More insight
               </ToolButton>
             </div>
           </section>

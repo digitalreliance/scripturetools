@@ -59,7 +59,83 @@
   }
 }
 
+/*
+ * "More insight": the sparkle twinkles now and then, and a soft sheen
+ * crosses the button, to say there is more to find behind it.
+ */
+.insight {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.insight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    color-mix(in oklab, var(--s-accent, currentColor) 18%, transparent) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  animation: sheen 4.2s var(--ease-out-quint) 1.2s infinite;
+  pointer-events: none;
+}
+
+.sparkle {
+  color: var(--s-accent, currentColor);
+  transform-origin: center;
+  animation: twinkle 4.2s ease-in-out 1.2s infinite;
+}
+
+@media (hover: hover) {
+  .insight:hover .sparkle {
+    animation: twinkle 900ms ease-in-out infinite;
+  }
+}
+
+.insight:focus-visible .sparkle {
+  animation: twinkle 900ms ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  70%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  78% {
+    transform: scale(1.28) rotate(18deg);
+    opacity: 0.75;
+  }
+  86% {
+    transform: scale(0.9) rotate(-8deg);
+    opacity: 1;
+  }
+}
+
+@keyframes sheen {
+  0%,
+  60% {
+    transform: translateX(-120%);
+  }
+  85%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .insight::after,
+  .sparkle,
+  .insight:hover .sparkle,
+  .insight:focus-visible .sparkle {
+    animation: none;
+  }
   .drawIn .bracket,
   .drawIn .row,
   .sheet {

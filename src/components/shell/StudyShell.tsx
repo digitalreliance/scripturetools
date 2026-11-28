@@ -50,6 +50,11 @@ export interface StudyShellProps {
    * they chose. Docked panels are left as the reader set them.
    */
   selection?: string | null;
+  /**
+   * Bump this number to bring the inspector into view in whichever layout is
+   * on screen, for example from a button that points the reader to it.
+   */
+  revealInspector?: number;
   /** Status bar, left and right. Use <StatusItem> for labelled values. */
   status?: ReactNode;
   statusEnd?: ReactNode;
@@ -127,6 +132,7 @@ export function StudyShell({
   inspectorLabel = "Inspector",
   inspectorWidth = 336,
   selection = null,
+  revealInspector = 0,
   status,
   statusEnd,
   children,
@@ -170,6 +176,20 @@ export function StudyShell({
     setShownSelection(selection);
     if (selection !== null && layout === "compact") {
       setPanels((p) => ({ ...p, compact: { sidebar: false, inspector: hasInspector || p.compact.inspector } }));
+    }
+  }
+
+  // A request to reveal the inspector opens it wherever it is closed; in the
+  // compact layout the outline makes way for it, as for a new choice.
+  const [shownReveal, setShownReveal] = useState(revealInspector);
+  if (revealInspector !== shownReveal) {
+    setShownReveal(revealInspector);
+    if (hasInspector) {
+      setPanels((p) =>
+        layout === "compact"
+          ? { ...p, compact: { sidebar: false, inspector: true } }
+          : { ...p, [layout]: { ...p[layout], inspector: true } },
+      );
     }
   }
 
