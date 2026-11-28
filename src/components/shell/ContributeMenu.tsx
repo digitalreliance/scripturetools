@@ -89,9 +89,18 @@ const siteTriggerTones = {
 /**
  * The project's Contribute menu, for the hub's navigation: what it means that
  * the project is open source, then the same ways in a study offers, for the
- * whole project. Styled for the cover or for paper, like SearchButton.
+ * whole project. Styled for the cover or for paper, like SearchButton, and
+ * with `collapse`, only its mark in a window narrower than 640 px (a phone).
  */
-export function SiteContributeMenu({ tone = "paper", className }: { tone?: "cover" | "paper"; className?: string }) {
+export function SiteContributeMenu({
+  tone = "paper",
+  collapse = false,
+  className,
+}: {
+  tone?: "cover" | "paper";
+  collapse?: boolean;
+  className?: string;
+}) {
   const page = `${SITE.url}/`;
   return (
     <MenuFrame
@@ -102,12 +111,13 @@ export function SiteContributeMenu({ tone = "paper", className }: { tone?: "cove
           type="button"
           className={cn(
             "inline-flex h-9 items-center gap-2 rounded-control px-3 text-[14px] transition-colors duration-120",
+            collapse && "max-sm:w-9 max-sm:justify-center max-sm:px-0",
             siteTriggerTones[tone],
             className,
           )}
         >
           <GitHubMark className="size-[15px]" />
-          Contribute
+          <span className={collapse ? "max-sm:sr-only" : undefined}>Contribute</span>
         </button>
       }
       header={

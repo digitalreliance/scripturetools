@@ -1,10 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Check, Copy, Monitor, Send } from "lucide-react";
+import { Check, Copy, LibraryBig, Monitor, Send } from "lucide-react";
+import { HOME_HREF } from "@/lib/routes";
 import { enterPreview } from "./preview";
 
-/** The phone gate's three choices: send the link on, copy it, or preview anyway. */
+/**
+ * The phone gate's choices: send the link on, copy it, preview anyway, or go
+ * back to the index, which a phone can browse.
+ */
 export function GateActions() {
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
@@ -70,6 +75,13 @@ export function GateActions() {
         <Monitor aria-hidden className="size-4" />
         Preview the desktop version
       </button>
+      <Link
+        href={`${HOME_HREF}#contents`}
+        className="-mt-1 inline-flex h-11 items-center justify-center gap-2 rounded-control px-5 text-[15px] font-medium text-cover-muted underline decoration-cover-line underline-offset-4 transition-colors active:text-cover-ink"
+      >
+        <LibraryBig aria-hidden className="size-4" />
+        Browse every study
+      </Link>
     </div>
   );
 }

@@ -94,7 +94,11 @@ export function CommandDialog({ open, onOpenChange, opener }: CommandDialogProps
                 placeholder="Search studies, or type a verse such as Rev 12:9"
                 className="h-14 min-w-0 flex-1 bg-transparent text-[16px] text-ink placeholder:text-ink-faint focus:outline-none"
               />
-              <Kbd className="text-ink-muted">Esc</Kbd>
+              <Kbd className="text-ink-muted pointer-coarse:hidden">Esc</Kbd>
+              {/* Under a finger there is no Esc key: a plain way out instead. */}
+              <Dialog.Close className="-mr-2 hidden h-10 shrink-0 items-center rounded-control px-3 text-[15px] font-medium text-ink-muted active:text-ink pointer-coarse:inline-flex">
+                Cancel
+              </Dialog.Close>
             </div>
             <Command.List className="scroll-thin max-h-[min(56vh,520px)] overflow-y-auto p-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-[12px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-ink-muted">
               <Command.Empty className="px-3 py-8 text-center text-[14px] text-ink-muted">

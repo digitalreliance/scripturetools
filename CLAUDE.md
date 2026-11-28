@@ -61,8 +61,8 @@ Read `node_modules/next/dist/docs/` when unsure; this version differs from older
 - The project's principles come first (README, "The text stays as it is"): never change
   the KJV text, never write commentary or argue for an interpretation, and credit and
   label everything that comes from outside the text.
-- Every page and study works on a computer and an iPad, by mouse, keyboard and touch;
-  phones get the device gate. Follow "Desk and iPad" in `docs/DESIGN.md`: size for a finger
+- Every page and study works on a computer and an iPad, by mouse, keyboard and touch.
+  Phones can browse the index (and any page in `PHONE_PAGES`); studies show them the device gate. Follow "Desk and iPad" in `docs/DESIGN.md`: size for a finger
   under `pointer-coarse:`, gate hover with `canHover` (`src/lib/pointer.ts`), give every
   keyboard shortcut a button, pass `selection` to `StudyShell`, and check 1440×900,
   1180×820 and 820×1180. Device thresholds live in `SITE`; `devices.test.ts` keeps CSS in step.

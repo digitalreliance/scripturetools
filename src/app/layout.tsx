@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { Archivo, Libre_Baskerville } from "next/font/google";
 import { CommandPalette } from "@/components/command/CommandPalette";
 import { DeviceBootScript } from "@/components/device/DeviceBootScript";
 import { DeviceGate } from "@/components/device/DeviceGate";
+import { DeviceRoute } from "@/components/device/DeviceRoute";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -65,6 +67,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-dvh">
         {children}
         <CommandPalette />
+        <Suspense fallback={null}>
+          <DeviceRoute />
+        </Suspense>
         <DeviceGate />
       </body>
     </html>

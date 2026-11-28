@@ -90,8 +90,9 @@ single accented word inside a headline, no `→` glued to button text, no
 
 - **Desk and iPad.** Designed at 1440, and built to work on a computer or a
   tablet, from a 500 px window (half an iPad in Split View) up, by mouse,
-  trackpad, keyboard, pencil or finger. Phones get the device gate, then an
-  optional scaled desktop preview. See **Desk and iPad** below.
+  trackpad, keyboard, pencil or finger. Phones can browse the index; a study
+  shows them the device gate, then an optional scaled desktop preview. See
+  **Desk and iPad** below.
 - Hub: the **cover** (dark hero with the cross-reference arcs) opens onto the
   **pages** (paper). The contents of the pages are navigated by a **thumb index**
   fixed to the right edge: one tab per category, the current one pulled out.
@@ -124,8 +125,9 @@ single accented word inside a headline, no `→` glued to button text, no
 ## Desk and iPad
 
 Scripture Tools is made for the two places people study at length: a desk and
-an iPad. Every page, and every study from now on, works on both. Phones see the
-device gate instead (below).
+an iPad. Every page, and every study from now on, works on both. On a phone,
+the index works too, so anyone can see what is here; the studies show a phone
+the device gate instead (below).
 
 ### Who gets what
 
@@ -137,11 +139,18 @@ splitting the screen never changes the answer:
 |---|---|---|
 | Computer | anything with a fine pointer (touchscreen laptops included) | the app |
 | Tablet | touch-first, shorter screen side at least `SITE.minTabletWidth` (600 px) | the app, tuned for touch (`html[data-device="tablet"]`) |
-| Phone | touch-first, shorter side under 600 px, even held sideways | the device gate (`html[data-device="phone"]`) |
+| Phone | touch-first, shorter side under 600 px, even held sideways | the index, laid out for a phone; on a study, the device gate (`html[data-device="phone"]`) |
+
+Pages a phone can browse are listed in `PHONE_PAGES`
+(`src/components/device/phone-pages.ts`); today that is the index. While one is
+on screen, `<html>` carries `data-phone-page` (set by the boot script on first
+load and by `DeviceRoute` as the reader moves between pages), and the gate
+stays away. A new page that works at phone width joins the list; a study
+never does.
 
 A window narrower than `SITE.minWindowWidth` (500 px: Slide Over, a squeezed
-browser) shows the gate's other face, asking for a wider window; widening it
-brings everything back as it was.
+browser) shows the gate's other face on a study, asking for a wider window;
+widening it brings everything back as it was. The index fits any width.
 
 ### Layout by width
 
@@ -157,6 +166,11 @@ brings everything back as it was.
   halves.
 - **Under 720 px**: the thumb index steps aside, and top-bar buttons with a
   `shortLabel` show only their icons.
+- **Under 640 px** (a phone, on the index only): one column with 20 px
+  gutters. The cover's navigation keeps Studies and shows Contribute and
+  Search as icons; its two buttons stack full width; under the cross-reference
+  figure a colour key names the canon groups, since the bands are too narrow
+  to label; study rows use smaller thumbnails; the footer stacks.
 
 ### Touch rules (for every study)
 
@@ -187,10 +201,12 @@ brings everything back as it was.
 
 ### The phone gate
 
-It says what the link opens (on a study's page, the study's name and summary),
-then offers to send the link to a tablet or computer (the system share sheet),
-copy it, or preview the desktop layout scaled to fit. On a phone held sideways
-it lays out in two columns. The preview is remembered.
+On a study, a phone sees the gate. It says what the link opens (the study's
+name and summary), then offers to send the link to a tablet or computer (the
+system share sheet), copy it, preview the desktop layout scaled to fit, or go
+back to browse every study on the index. On a phone held sideways it lays out
+in two columns. The preview is remembered, and applies to studies only: the
+index always shows a phone its own layout.
 
 ### On the home screen
 

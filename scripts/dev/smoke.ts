@@ -7,8 +7,9 @@
  * Visits every key page at desktop size, checks the HTTP status and that the
  * page rendered real content, and fails on console errors, page errors or
  * failed requests. Then checks each device gets the right screen: the app on
- * iPads, the gate on phones and in windows too narrow for the layout. Exits
- * non-zero on any failure.
+ * iPads; on phones the index, but the gate on a study, even one reached by
+ * tapping in from the index; and the gate in a window too narrow for a study.
+ * Exits non-zero on any failure.
  */
 import { chromium, devices } from "playwright-core";
 
@@ -77,27 +78,47 @@ async function main() {
   }
   await desktop.close();
 
-  // Desk and iPad get the app; phones, and windows too narrow for it, get the gate.
+  // Desk and iPad get the app. Phones get the index, and the gate on a study,
+  // as do windows too narrow for one.
   const DEVICE_CHECKS: {
     name: string;
     context: Parameters<typeof browser.newContext>[0];
     path: string;
+    /** Tap this first and wait to arrive at `path` without a reload. */
+    tapFromIndex?: string;
     gate: boolean;
     /** Visible text that proves the right screen rendered. */
     expect: RegExp;
   }[] = [
-    { name: "phone, hub", context: devices["iPhone 15"], path: "/", gate: true, expect: /Made for a larger screen/ },
+    { name: "phone, index", context: devices["iPhone 15"], path: "/", gate: false, expect: /see how the bible fits together/i },
     { name: "phone, study", context: devices["iPhone 15"], path: "/studies/revelation-chiasm", gate: true, expect: /This link opens/ },
-    { name: "phone held sideways", context: devices["iPhone 15 landscape"], path: "/", gate: true, expect: /Made for a larger screen/ },
+    {
+      name: "phone, study reached from the index",
+      context: devices["iPhone 15"],
+      path: "/studies/revelation-chiasm",
+      tapFromIndex: "text=Open Revelation’s mirror",
+      gate: true,
+      expect: /This link opens/,
+    },
+    { name: "phone held sideways, study", context: devices["iPhone 15 landscape"], path: "/studies/revelation-chiasm", gate: true, expect: /Made for a larger screen/ },
+    { name: "phone held sideways, index", context: devices["iPhone 15 landscape"], path: "/", gate: false, expect: /see how the bible fits together/i },
     { name: "iPad, hub", context: devices["iPad Pro 11"], path: "/", gate: false, expect: /see how the bible fits together/i },
     { name: "iPad upright, study", context: devices["iPad Pro 11"], path: "/studies/revelation-chiasm", gate: false, expect: /Walk/ },
     { name: "iPad on its side, study", context: devices["iPad Pro 11 landscape"], path: "/studies/revelation-chiasm", gate: false, expect: /Walk to the centre/ },
-    { name: "narrow window", context: { viewport: { width: 420, height: 800 } }, path: "/", gate: true, expect: /Make the window wider/ },
+    { name: "narrow window, study", context: { viewport: { width: 420, height: 800 } }, path: "/studies/revelation-chiasm", gate: true, expect: /Make the window wider/ },
+    { name: "narrow window, index", context: { viewport: { width: 420, height: 800 } }, path: "/", gate: false, expect: /see how the bible fits together/i },
   ];
   for (const check of DEVICE_CHECKS) {
     const context = await browser.newContext(check.context);
     const page = await context.newPage();
-    await page.goto(base + check.path, { waitUntil: "networkidle" });
+    if (check.tapFromIndex) {
+      await page.goto(base + "/", { waitUntil: "networkidle" });
+      await page.tap(check.tapFromIndex);
+      await page.waitForURL(base + check.path);
+      await page.waitForTimeout(300);
+    } else {
+      await page.goto(base + check.path, { waitUntil: "networkidle" });
+    }
     const gateVisible = await page.locator("[data-device-gate]").isVisible();
     const textVisible = await page.getByText(check.expect).first().isVisible().catch(() => false);
     const ok = gateVisible === check.gate && textVisible;

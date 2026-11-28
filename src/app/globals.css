@@ -179,33 +179,35 @@
 /*
  * Device gate. A blocking script in <head> sets html[data-device="phone"] on
  * phones before first paint, and html[data-preview="desktop"] once the visitor
- * chooses the scaled desktop preview. Tablets and computers get the app. The
- * gate overlay carries [data-device-gate] and is hidden until needed, so
- * nothing flashes.
+ * chooses the scaled desktop preview. Tablets and computers get the app.
+ * Pages laid out for phones too (the index; see phone-pages.ts) carry
+ * html[data-phone-page] and show to every device as they are. The gate overlay
+ * carries [data-device-gate] and is hidden until needed, so nothing flashes.
  */
 [data-device-gate] {
   display: none;
 }
 
-html[data-device="phone"]:not([data-preview="desktop"]) [data-device-gate] {
+html[data-device="phone"]:not([data-preview="desktop"]):not([data-phone-page]) [data-device-gate] {
   display: block;
 }
 
-html[data-device="phone"]:not([data-preview="desktop"]) body > :not([data-device-gate]) {
+html[data-device="phone"]:not([data-preview="desktop"]):not([data-phone-page]) body > :not([data-device-gate]) {
   display: none !important;
 }
 
 /*
  * A window narrower than the layout is made for (SITE.minWindowWidth: Slide
  * Over on an iPad, a squeezed browser) shows the gate too, asking for more
- * room; widening the window brings the app straight back, as it was.
+ * room; widening the window brings the app straight back, as it was. Phone
+ * pages fit any width, so they never ask.
  */
 @media (width < 500px) {
-  html:not([data-device="phone"]) [data-device-gate] {
+  html:not([data-device="phone"]):not([data-phone-page]) [data-device-gate] {
     display: block;
   }
 
-  html:not([data-device="phone"]) body > :not([data-device-gate]) {
+  html:not([data-device="phone"]):not([data-phone-page]) body > :not([data-device-gate]) {
     display: none !important;
   }
 }
@@ -214,7 +216,7 @@ html[data-device="phone"]:not([data-preview="desktop"]) body > :not([data-device
   display: none;
 }
 
-html[data-device="phone"][data-preview="desktop"] [data-device-preview-bar] {
+html[data-device="phone"][data-preview="desktop"]:not([data-phone-page]) [data-device-preview-bar] {
   display: flex;
 }
 
