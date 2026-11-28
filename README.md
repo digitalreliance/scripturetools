@@ -95,8 +95,8 @@ more into the text than is there, a place on a map with a better source.
 - **[Tell us something is broken](../../issues/new?template=something-is-broken.yml)**
 - **Build something.** Start with [CONTRIBUTING.md](CONTRIBUTING.md)
 
-Every study also has a **Contribute** button in its top bar that opens these
-forms with the study and your exact view already filled in.
+The index page and every study have a **Contribute** button. In a study it
+opens these forms with the study and your exact view already filled in.
 
 Please read the [code of conduct](CODE_OF_CONDUCT.md) before you join a
 discussion.

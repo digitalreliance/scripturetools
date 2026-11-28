@@ -93,6 +93,13 @@ single accented word inside a headline, no `→` glued to button text, no
 - Hub: the **cover** (dark hero with the cross-reference arcs) opens onto the
   **pages** (paper). The contents of the pages are navigated by a **thumb index**
   fixed to the right edge: one tab per category, the current one pulled out.
+- The cover's **navigation** is one row of 36 px controls on the control
+  radius, every item on one centre line: the wordmark (home), then Studies,
+  Sources and **Contribute**, a hairline, and Search. Contribute is the same
+  menu every study has, with GitHub's mark; on the hub it is about the whole
+  project and opens by saying plainly that the project is free and open
+  source. It is never filled or coloured: the cover's one filled button is
+  the hero's call to action.
 - Live studies appear as large **plates** (a live preview in the study's own
   palette). Planned studies appear as compact contents rows. Hierarchy comes from
   status, not from identical cards.
@@ -130,7 +137,8 @@ Every study renders inside `StudyShell` (`src/components/shell`):
 The top bar always ends with **Contribute** (before the inspector toggle),
 rendered by `StudyShell` from the study's `slug`: report a mistake or suggest an
 improvement (a GitHub issue prefilled with the study and the exact view, hash
-included), or read the study's code. Links are built in `src/lib/contribute.ts`
+included), or read the study's code, then the project on GitHub. The hub's navigation
+opens the same menu (`SiteContributeMenu`) for the whole project. Links are built in `src/lib/contribute.ts`
 from `SITE.repo`.
 
 Shareable state lives in the URL hash. Every study has a keyboard path through
