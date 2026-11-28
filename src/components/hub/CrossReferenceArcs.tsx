@@ -425,21 +425,22 @@ export function CrossReferenceArcs() {
 
   const groupExtents = useMemo(() => {
     if (!geometry) return [];
-    // Labels start at their group (the last one ends at its group, on the
-    // right edge). Where the figure is too narrow for a label to clear the
-    // ones before it, as on an iPad held upright, it drops to the first line
-    // below where it fits.
+    // Labels start at their group, except the last one, and any that would
+    // run off the right edge (on a phone), which end with their group. Where
+    // the figure is too narrow for a label to clear the ones before it, it
+    // drops to the first line below where it fits.
     const rowEnds: number[] = [];
     return CANON_GROUPS.map((g, i) => {
       const idx = BOOK_GROUPS.map((x, j) => (x === g.id ? j : -1)).filter((j) => j >= 0);
       const start = geometry.books[idx[0]][0];
       const end = geometry.books[idx[idx.length - 1]][1];
       const w = labelWidth(g.name);
-      const [from, to] = i === CANON_GROUPS.length - 1 ? [end - w, end] : [start, start + w];
+      const alignEnd = i === CANON_GROUPS.length - 1 || start + w > geometry.width;
+      const [from, to] = alignEnd ? [end - w, end] : [start, start + w];
       let row = rowEnds.findIndex((rowEnd) => from >= rowEnd + 8);
       if (row === -1) row = rowEnds.length;
       rowEnds[row] = to;
-      return { ...g, row, left: (start / geometry.width) * 100, width: ((end - start) / geometry.width) * 100 };
+      return { ...g, row, alignEnd, left: (start / geometry.width) * 100, width: ((end - start) / geometry.width) * 100 };
     });
   }, [geometry]);
   const labelRows = Math.max(1, ...groupExtents.map((g) => g.row + 1));
@@ -519,12 +520,13 @@ export function CrossReferenceArcs() {
         ) : null}
       </div>
 
-      <div aria-hidden className="relative mt-3" style={{ height: 36 + (labelRows - 1) * LABEL_ROW }}>
-        {groupExtents.map((g, i) => (
+      {/* Each canon group's band under the spine, named beneath it; on a phone, where the bands are too narrow to name, a key follows instead. */}
+      <div aria-hidden className="relative mt-3 max-sm:h-0.5!" style={{ height: 36 + (labelRows - 1) * LABEL_ROW }}>
+        {groupExtents.map((g) => (
           <div key={g.id} className="absolute top-0" style={{ left: `${g.left}%`, width: `${g.width}%` }}>
             <div className="h-[2px] rounded-full" style={{ backgroundColor: g.color }} />
             <p
-              className={`mt-1.5 text-[12px] whitespace-nowrap text-cover-muted ${i === CANON_GROUPS.length - 1 ? "absolute right-0" : ""}`}
+              className={`mt-1.5 text-[12px] whitespace-nowrap text-cover-muted max-sm:hidden ${g.alignEnd ? "absolute right-0" : ""}`}
               style={g.row ? { marginTop: 6 + g.row * LABEL_ROW } : undefined}
             >
               {g.name}
@@ -532,6 +534,15 @@ export function CrossReferenceArcs() {
           </div>
         ))}
       </div>
+
+      <ul aria-hidden className="mt-4 hidden flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-cover-muted max-sm:flex">
+        {CANON_GROUPS.map((g) => (
+          <li key={g.id} className="flex items-center gap-1.5 whitespace-nowrap">
+            <span className="size-2 rounded-full" style={{ backgroundColor: g.color }} />
+            {g.name}
+          </li>
+        ))}
+      </ul>
 
       <figcaption className="sr-only">
         An arc diagram of {data ? data.links.length.toLocaleString("en-US") : "the strongest"} links between the Bible&rsquo;s 1,189

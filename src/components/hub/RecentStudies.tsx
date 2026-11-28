@@ -25,12 +25,12 @@ function SlideText({ study }: { study: Study }) {
         <span className="text-[12px] text-ink-muted">{getCategory(study.category).title}</span>
         <Dated study={study} />
       </p>
-      <h2 className="mt-4 text-[44px] leading-[0.98] font-semibold tracking-[-0.03em] text-balance [font-stretch:115%] lg:text-[50px]">
+      <h2 className="mt-4 text-[44px] leading-[0.98] max-sm:text-[36px] font-semibold tracking-[-0.03em] text-balance [font-stretch:115%] lg:text-[50px]">
         {study.title}
       </h2>
-      <p className="mt-5 max-w-[44ch] text-[17px] leading-relaxed text-ink-muted">{study.summary}</p>
+      <p className="mt-5 max-w-[44ch] text-[17px] leading-relaxed text-ink-muted max-sm:text-[16px]">{study.summary}</p>
       {study.facts ? (
-        <dl className="mt-7 grid grid-cols-3 gap-6 border-t border-paper-line pt-5 text-[13px]">
+        <dl className="mt-7 grid grid-cols-3 gap-6 border-t border-paper-line pt-5 text-[13px] max-sm:gap-4">
           {study.facts.map(([label, value]) => (
             <div key={label}>
               <dt className="text-ink-muted">{label}</dt>

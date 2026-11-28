@@ -1,22 +1,28 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { applyViewport, exitPreview, isPreviewing, PREVIEW_VIEWPORT } from "./preview";
+import { applyViewport, chosePreview, DEVICE_VIEWPORT, exitPreview, isPreviewing, PREVIEW_VIEWPORT } from "./preview";
+import { PHONE_PAGE_ATTRIBUTE } from "./phone-pages";
 
 /**
  * Shown only in the scaled desktop preview on phones (CSS decides
  * visibility). The page is laid out 1280 px wide and shrunk to fit, so the bar
  * counter-zooms itself to stay at a normal, tappable size.
  *
- * It also keeps the fixed-width viewport in place: the boot script can run
- * before the viewport tag exists, and navigation may re-render that tag.
+ * It also keeps the viewport right: fixed-width for the preview, which the
+ * boot script can set before the viewport tag exists and navigation may
+ * re-render, and the phone's own width again on a page laid out for phones,
+ * such as the index, which never needs the preview.
  */
 export function PreviewBar() {
   const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sync = () => {
-      if (!isPreviewing()) return;
+      if (!isPreviewing()) {
+        if (chosePreview()) applyViewport(DEVICE_VIEWPORT);
+        return;
+      }
       applyViewport(PREVIEW_VIEWPORT);
       const deviceWidth = Math.min(window.screen.width, window.innerWidth) || window.innerWidth;
       const zoom = Math.max(1, window.innerWidth / deviceWidth);
@@ -25,7 +31,7 @@ export function PreviewBar() {
     sync();
     const observer = new MutationObserver(sync);
     observer.observe(document.head, { childList: true, subtree: true, attributes: true, attributeFilter: ["content"] });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-preview"] });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-preview", PHONE_PAGE_ATTRIBUTE] });
     window.addEventListener("resize", sync);
     window.addEventListener("orientationchange", sync);
     return () => {

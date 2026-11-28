@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { BrandMark } from "@/components/brand/BrandMark";
+import { HOME_HREF } from "@/lib/routes";
 import { SITE } from "@/lib/site";
 import { STUDIES } from "@/studies/registry";
 import styles from "./DeviceGate.module.css";
@@ -54,12 +56,12 @@ function Devices() {
 }
 
 /**
- * The screen shown instead of the app where it can't work. It is part of
+ * The screen shown instead of a study where it can't work. It is part of
  * every page's static HTML but hidden by default; globals.css reveals it on
  * phones (marked before first paint by the boot script), and in any window
- * narrower than SITE.minWindowWidth, where it asks for a wider one. Its copy
- * and actions change to match. Both elements below must stay direct children
- * of <body>.
+ * narrower than SITE.minWindowWidth, where it asks for a wider one, except on
+ * pages laid out for phones too, such as the index. Its copy and actions
+ * change to match. Both elements below must stay direct children of <body>.
  */
 export function DeviceGate() {
   return (
@@ -73,10 +75,10 @@ export function DeviceGate() {
         className="theme-cover min-h-dvh bg-cover px-6 pt-[max(2.5rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))] text-cover-ink short-landscape:px-[max(2rem,env(safe-area-inset-left))] short-landscape:pt-[max(1.5rem,env(safe-area-inset-top))]"
       >
         <div className="mx-auto flex min-h-[calc(100dvh-4.5rem)] max-w-sm flex-col short-landscape:max-w-3xl">
-          <div className="flex items-center gap-2 text-[15px] font-semibold [font-stretch:112%]">
+          <Link href={HOME_HREF} className="flex w-fit items-center gap-2 rounded-control text-[15px] font-semibold [font-stretch:112%]">
             <BrandMark className="size-[22px]" />
             {SITE.name}
-          </div>
+          </Link>
 
           <div className="flex flex-1 flex-col justify-center py-10 short-landscape:grid short-landscape:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] short-landscape:items-start short-landscape:gap-10 short-landscape:py-6">
             <Devices />

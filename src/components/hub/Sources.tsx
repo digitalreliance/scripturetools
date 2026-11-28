@@ -8,7 +8,7 @@ const link = "underline decoration-paper-line underline-offset-3 transition-colo
 export function Sources() {
   return (
     <section id="sources" aria-labelledby="sources-title" className="border-t border-paper-line bg-paper text-ink">
-      <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-y-8 pt-14 pb-12 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-0 pl-8 pr-8 min-[720px]:pr-[136px] md:pl-14 lg:pr-[188px]">
+      <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-y-8 pt-14 pb-12 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-0 px-5 sm:px-8 min-[720px]:pr-[136px] md:pl-14 lg:pr-[188px]">
         <div className="lg:col-span-4">
           <h2 id="sources-title" className="text-[24px] leading-tight font-semibold tracking-[-0.02em] [font-stretch:110%]">Sources</h2>
           <p className="mt-2 max-w-[34ch] text-[14px] leading-relaxed text-ink-muted">
@@ -50,8 +50,8 @@ export function Sources() {
           <div>
             <dt className="font-semibold">Made for computers and tablets</dt>
             <dd className="mt-1.5 text-ink-muted">
-              {SITE.name} works on a computer or a tablet, an iPad included, by mouse, trackpad, keyboard or touch. Phones
-              get a link to send to a bigger screen, and a scaled preview.
+              {SITE.name} works on a computer or a tablet, an iPad included, by mouse, trackpad, keyboard or touch. On a
+              phone you can browse this page; each study offers to send itself to a bigger screen, or a scaled preview.
             </dd>
           </div>
         </dl>

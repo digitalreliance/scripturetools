@@ -24,14 +24,14 @@ export function SiteFooter() {
   const [verse] = readPassage(ref);
   return (
     <footer className="bg-paper text-ink">
-      <div className="mx-auto max-w-[1320px] pb-8 pl-8 pr-8 min-[720px]:pr-[136px] md:pl-14 lg:pr-[188px]">
-        <div className="flex min-h-16 flex-wrap items-center justify-between gap-x-8 border-t border-paper-line py-[13.5px] text-[13px] text-ink-muted">
-          <div className="flex items-center gap-7">
+      <div className="mx-auto max-w-[1320px] pb-8 px-5 sm:px-8 min-[720px]:pr-[136px] md:pl-14 lg:pr-[188px]">
+        <div className="flex min-h-16 flex-wrap items-center justify-between gap-x-8 border-t border-paper-line py-[13.5px] text-[13px] text-ink-muted max-sm:flex-col max-sm:items-start max-sm:gap-y-4 max-sm:py-6">
+          <div className="flex items-center gap-7 max-sm:flex-col max-sm:items-start max-sm:gap-4">
             <a href="#cover" aria-label={`${SITE.name}, back to the top`} className="rounded-control text-ink">
               <Wordmark className="text-[14px]" />
             </a>
             <nav aria-label="Footer">
-              <ul className="flex items-center gap-[22px] whitespace-nowrap">
+              <ul className="flex items-center gap-[22px] whitespace-nowrap max-sm:flex-wrap max-sm:gap-x-5 max-sm:gap-y-2.5">
                 <li>
                   <a className={link} href="#contents">
                     All studies
@@ -56,7 +56,7 @@ export function SiteFooter() {
             </nav>
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center gap-1.5">
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 max-sm:-ml-2.5 max-sm:shrink max-sm:flex-wrap">
             {SITE.xHandle ? (
               <a className={iconLink} href={xProfileUrl(SITE.xHandle)} aria-label={`@${SITE.xHandle} on X`}>
                 <XMark className="size-[15px]" />
@@ -75,8 +75,8 @@ export function SiteFooter() {
             <a className={iconLink} href={REPO_URL} aria-label={`${SITE.name} on GitHub`}>
               <GitHubMark />
             </a>
-            <span aria-hidden className="mx-2.5 h-4 w-px bg-paper-line" />
-            <p className="whitespace-nowrap">
+            <span aria-hidden className="mx-2.5 h-4 w-px bg-paper-line max-sm:hidden" />
+            <p className="whitespace-nowrap max-sm:basis-full max-sm:pl-2.5 max-sm:whitespace-normal">
               © {SITE.copyrightYear} {SITE.name}. Free and open source.{" "}
               <a
                 lang="la"

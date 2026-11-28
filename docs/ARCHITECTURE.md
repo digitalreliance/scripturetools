@@ -120,16 +120,24 @@ device before the first paint, so nothing flashes:
   `SITE.minTabletWidth`, 600 px: every iPad) get the app too, marked
   `html[data-device="tablet"]` and sized for touch with `pointer-coarse:`.
 - **Phones** (touch-first, shorter side under 600 px) are marked
-  `html[data-device="phone"]` and see a full-screen gate instead: what the link
+  `html[data-device="phone"]`. They can browse the index, which has a phone
+  layout, but a study shows them a full-screen gate instead: what the link
   opens, a button to send it to a tablet or computer (the share sheet), Copy
-  link, and a "Preview the desktop version" option that renders the layout at
-  1280 px wide, scaled to fit. The choice is remembered.
+  link, a "Preview the desktop version" option that renders the study at
+  1280 px wide, scaled to fit, and a way back to every study. The preview
+  choice is remembered and applies only to studies. Pages a phone can browse
+  are listed in `src/components/device/phone-pages.ts`; `DeviceRoute` keeps
+  `html[data-phone-page]` in step as the reader moves between pages, so a
+  phone tapping from the index into a study meets the gate before it paints.
+  The boot script itself lives in `src/components/device/boot.ts`, with tests
+  that run it against each kind of device.
 
 The screen decides, not the window, so turning a device or splitting its screen
 never changes the answer. Layout then follows the window: from
 `SITE.dockedPanelsWidth` (1024 px) a study's panels dock beside the canvas,
 below it they rearrange for an upright iPad, and a window narrower than
-`SITE.minWindowWidth` (500 px) is asked to widen. The numbers live in
+`SITE.minWindowWidth` (500 px) is asked to widen (except on the index, which
+fits any width). The numbers live in
 `src/lib/site.ts`; the stylesheets repeat them, and
 `src/lib/__tests__/devices.test.ts` keeps the two in step. The design rules
 are in `docs/DESIGN.md` under **Desk and iPad**.
