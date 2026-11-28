@@ -1,9 +1,14 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand/BrandMark";
 import { SearchButton } from "@/components/command/SearchButton";
+import { SiteContributeMenu } from "@/components/shell/ContributeMenu";
 import { studyHref } from "@/lib/routes";
 import { SITE } from "@/lib/site";
 import { CrossReferenceArcs } from "./CrossReferenceArcs";
+
+/** Every control in the bar is 36 px tall on the 8 px control radius; links get the same hit area. */
+const navLink =
+  "inline-flex h-9 items-center rounded-control px-3 text-cover-muted transition-colors duration-120 hover:text-cover-ink";
 
 /**
  * The cover: dark calfskin with a blind-tooled border, the promise of the
@@ -17,16 +22,18 @@ export function Cover() {
 
       <div className="relative mx-auto max-w-[1320px] px-14">
         <nav aria-label="Main" className="flex h-[76px] items-center justify-between">
-          <Link href="/" className="rounded-control text-cover-ink">
+          <Link href="/" className="inline-flex items-center rounded-control text-cover-ink">
             <Wordmark />
           </Link>
-          <div className="flex items-center gap-7 text-[14px]">
-            <a href="#contents" className="text-cover-muted transition-colors hover:text-cover-ink">
+          <div className="flex items-center gap-1 text-[14px]">
+            <a href="#contents" className={navLink}>
               Studies
             </a>
-            <a href="#sources" className="text-cover-muted transition-colors hover:text-cover-ink">
+            <a href="#sources" className={navLink}>
               Sources
             </a>
+            <SiteContributeMenu tone="cover" />
+            <span aria-hidden className="mx-3 h-5 w-px bg-cover-line" />
             <SearchButton tone="cover" />
           </div>
         </nav>
