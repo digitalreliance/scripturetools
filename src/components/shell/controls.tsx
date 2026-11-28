@@ -16,7 +16,12 @@ export interface SegmentedItem<T extends string> {
   hint?: string;
 }
 
-/** Single-choice segmented control, e.g. a view switcher in the top bar. */
+/**
+ * Single-choice segmented control, e.g. a view switcher in the top bar. In a
+ * top bar narrower than 1024 px (an iPad held upright), items with icons name
+ * only the chosen one; the rest show their icons, and keep their labels as
+ * accessible names and tooltips.
+ */
 export function Segmented<T extends string>({
   value,
   onValueChange,
@@ -45,11 +50,11 @@ export function Segmented<T extends string>({
         <ToggleGroup.Item
           key={item.value}
           value={item.value}
-          title={item.hint}
-          className="inline-flex h-7 items-center gap-1.5 rounded-[6px] px-2.5 text-ui font-medium text-s-muted transition-colors duration-120 hover:text-s-ink data-[state=on]:bg-s-raised data-[state=on]:text-s-ink data-[state=on]:shadow-[0_0_0_1px_var(--s-line)] [&_svg]:size-3.5"
+          title={item.hint ?? item.label}
+          className="group inline-flex h-7 items-center gap-1.5 rounded-[6px] px-2.5 text-ui font-medium text-s-muted transition-colors duration-120 select-none hover:text-s-ink active:text-s-ink data-[state=on]:bg-s-raised data-[state=on]:text-s-ink data-[state=on]:shadow-[0_0_0_1px_var(--s-line)] pointer-coarse:h-9 pointer-coarse:px-3 [&_svg]:size-3.5 pointer-coarse:[&_svg]:size-4"
         >
           {item.icon}
-          {item.label}
+          <span className={item.icon ? "group-data-[state=off]:@max-[63rem]/bar:sr-only" : undefined}>{item.label}</span>
         </ToggleGroup.Item>
       ))}
     </ToggleGroup.Root>
@@ -89,13 +94,13 @@ export function InspectorTabs({
     >
       <Tabs.List
         aria-label={label}
-        className="sticky top-0 z-10 flex gap-0.5 border-b border-s-line bg-s-chrome p-2"
+        className="sticky top-0 z-10 flex gap-0.5 border-b border-s-line bg-s-chrome p-2 @2xl/inspector:px-3"
       >
         {tabs.map((tab) => (
           <Tabs.Trigger
             key={tab.value}
             value={tab.value}
-            className="inline-flex h-7 flex-1 items-center justify-center gap-1.5 rounded-[6px] px-2 text-ui font-medium text-s-muted transition-colors duration-120 hover:text-s-ink data-[state=active]:bg-s-raised data-[state=active]:text-s-ink data-[state=active]:shadow-[0_0_0_1px_var(--s-line)]"
+            className="inline-flex h-7 flex-1 items-center justify-center @2xl/inspector:max-w-40 gap-1.5 rounded-[6px] px-2 text-ui font-medium text-s-muted transition-colors duration-120 select-none hover:text-s-ink active:text-s-ink pointer-coarse:h-9 data-[state=active]:bg-s-raised data-[state=active]:text-s-ink data-[state=active]:shadow-[0_0_0_1px_var(--s-line)]"
           >
             {tab.label}
             {tab.meta !== undefined ? <span className="tabular text-[11px] text-s-muted">{tab.meta}</span> : null}
@@ -119,7 +124,7 @@ export const ShellSearch = forwardRef<
   return (
     <label
       className={cn(
-        "flex h-8 w-56 items-center gap-2 rounded-control border border-s-line bg-s-canvas px-2.5 text-s-muted transition-colors focus-within:border-s-muted/70",
+        "flex h-8 w-56 items-center gap-2 rounded-control border border-s-line bg-s-canvas px-2.5 text-s-muted transition-colors focus-within:border-s-muted/70 pointer-coarse:h-10",
         wrapperClassName,
       )}
     >
@@ -133,7 +138,7 @@ export const ShellSearch = forwardRef<
         )}
         {...props}
       />
-      {shortcut ? <Kbd>{shortcut}</Kbd> : null}
+      {shortcut ? <Kbd className="pointer-coarse:hidden">{shortcut}</Kbd> : null}
     </label>
   );
 });

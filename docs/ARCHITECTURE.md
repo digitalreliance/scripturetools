@@ -55,7 +55,7 @@ src/
     shell/             StudyShell: the frame every study shares
     hub/               the index page
     bible/             VerseText, Passage
-    device/            the phone and tablet gate
+    device/            device sorting before first paint, and the phone gate
     primitives/        Kbd and other tiny pieces
   lib/
     bible/             canon, references, versification, markup, loaders
@@ -76,16 +76,22 @@ A study (micro-app) is a feature folder plus a thin route. To add one:
    carousel plays the plate's animation when it presents the study, so let it show what the
    study does, in at most ~6 s.
 2. Build it in `src/studies/<slug>/`. Render inside `StudyShell` so it inherits the
-   top bar, outline, inspector, status bar, panel shortcuts and palette theming.
+   top bar, outline, inspector, status bar, panel shortcuts, palette theming, Share
+   and Contribute, and the layouts for computers and iPads (pass the reader's choice
+   as `selection`).
 3. Put its data in `src/studies/<slug>/data/` (small, hand-curated) or produce it with a
    pipeline into `public/data/<name>/` (large or derived). Test the data.
 4. Add `src/app/studies/<slug>/page.tsx`: read whatever the page needs at build time,
    pass only that to the client component, export `metadata`.
 5. Keep shareable state in the hash with `useHashParam`.
-6. Flip the status to `live` and set `released` to that day (`YYYY-MM-DD`). The hub and the ⌘K
+6. Make it work on desk and iPad: follow the touch rules in `docs/DESIGN.md` (sizes
+   under `pointer-coarse:`, hover gated with `canHover`, a button for every shortcut),
+   and try it at 1440×900, iPad landscape (1180×820) and iPad upright (820×1180),
+   by touch as well as by mouse.
+7. Flip the status to `live` and set `released` to that day (`YYYY-MM-DD`). The hub and the ⌘K
    palette pick it up automatically. (`SITE.showPlannedStudies` in `src/lib/site.ts` controls
    whether planned studies are listed at all.)
-7. Later, when a change is worth a second look (a new view, more data, not a fix), set
+8. Later, when a change is worth a second look (a new view, more data, not a fix), set
    `updated` to that day. The hub's carousel shows the `SITE.recentStudyCount` (five) most
    recently released or updated studies, newest first (`recentStudies` in the registry).
 
@@ -104,11 +110,32 @@ Studies never import each other. Shared needs move into `src/lib` or `src/compon
 
 ## Devices
 
-The experience is designed for desktop (1024 px and up). A blocking script in
-`<head>` marks phones and tablets before the first paint, so they see a
-full-screen "best on a computer" screen instead of a broken layout. It offers to
-copy or share the link, and a "Preview anyway" option that renders the desktop
-layout at 1280 px wide, scaled to fit the screen. The choice is remembered.
+Scripture Tools is built for computers and tablets: desk and iPad. A blocking
+script in `<head>` (`src/components/device/DeviceBootScript.tsx`) sorts the
+device before the first paint, so nothing flashes:
+
+- **Computers** (anything with a fine pointer, touchscreen laptops included)
+  get the app.
+- **Tablets** (touch-first, with a screen whose shorter side is at least
+  `SITE.minTabletWidth`, 600 px: every iPad) get the app too, marked
+  `html[data-device="tablet"]` and sized for touch with `pointer-coarse:`.
+- **Phones** (touch-first, shorter side under 600 px) are marked
+  `html[data-device="phone"]` and see a full-screen gate instead: what the link
+  opens, a button to send it to a tablet or computer (the share sheet), Copy
+  link, and a "Preview the desktop version" option that renders the layout at
+  1280 px wide, scaled to fit. The choice is remembered.
+
+The screen decides, not the window, so turning a device or splitting its screen
+never changes the answer. Layout then follows the window: from
+`SITE.dockedPanelsWidth` (1024 px) a study's panels dock beside the canvas,
+below it they rearrange for an upright iPad, and a window narrower than
+`SITE.minWindowWidth` (500 px) is asked to widen. The numbers live in
+`src/lib/site.ts`; the stylesheets repeat them, and
+`src/lib/__tests__/devices.test.ts` keeps the two in step. The design rules
+are in `docs/DESIGN.md` under **Desk and iPad**.
+
+A web app manifest and an Apple touch icon let an iPad keep the site on its
+home screen and open it full screen.
 
 ## Budgets
 
@@ -116,13 +143,14 @@ layout at 1280 px wide, scaled to fit the screen. The choice is remembered.
   below; largest paint under 2 s on desktop broadband.
 - A study: under 250 KB of its own JavaScript; data fetched lazily and cached by
   the CDN.
-- 60 fps for hover, pan and zoom. Above ~2,000 marks, draw to canvas.
+- 60 fps for hover, touch, pan and zoom, on an iPad as on a computer. Above
+  ~2,000 marks, draw to canvas.
 - Ambient motion costs nothing when no one is looking: the cover's light stops
   when the figure is off screen or the tab is hidden, holds while a book is in
   focus, runs at most about 60 frames a second, and asks the browser for the
   low-power GPU.
-- Every visual has a keyboard path, visible focus, a reduced-motion version, and a
-  text alternative (a list, table or summary of what it shows).
+- Every visual has a keyboard path, a touch path, visible focus, a reduced-motion
+  version, and a text alternative (a list, table or summary of what it shows).
 
 ### Measuring the hub
 
@@ -185,8 +213,9 @@ Every dataset gets a note in `docs/data/` and an on-screen credit wherever it ap
 
 ## Roadmap
 
-1. **Now:** the hub (the index), the device gate, the KJV and its cross
-   references installed as data, and the first study: Revelation's mirror.
+1. **Now:** the hub (the index), layouts for desk and iPad with a gate for
+   phones, the KJV and its cross references installed as data, and the first
+   study: Revelation's mirror.
 2. **Next:** one study at a time, chosen by the project owner. Candidates: the
    KJV reader (data and library are ready), the cross-reference atlas, the maps
    foundation (MapLibre, places, Paul's journeys), the kings timeline, the word

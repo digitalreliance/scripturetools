@@ -20,7 +20,7 @@ export function Cover() {
       <div aria-hidden className="grain pointer-events-none absolute inset-0 opacity-70 mix-blend-soft-light" />
       <div aria-hidden className="pointer-events-none absolute inset-3 rounded-[22px] border border-cover-line" />
 
-      <div className="relative mx-auto max-w-[1320px] px-14">
+      <div className="relative mx-auto max-w-[1320px] px-8 md:px-14">
         <nav aria-label="Main" className="flex h-[76px] items-center justify-between">
           <Link href="/" className="inline-flex items-center rounded-control text-cover-ink">
             <Wordmark />
@@ -29,7 +29,8 @@ export function Cover() {
             <a href="#contents" className={navLink}>
               Studies
             </a>
-            <a href="#sources" className={navLink}>
+            {/* In a narrow window, Sources waits in the footer. */}
+            <a href="#sources" className={`${navLink} max-md:hidden`}>
               Sources
             </a>
             <SiteContributeMenu tone="cover" />
@@ -39,14 +40,14 @@ export function Cover() {
         </nav>
 
         <div className="pt-[3.5vh] pb-8">
-          <h1 className="max-w-[15ch] text-[clamp(56px,6vw,88px)] leading-[0.95] font-semibold tracking-[-0.035em] text-balance [font-stretch:118%]">
+          <h1 className="max-w-[15ch] text-[clamp(44px,8vw,56px)] leading-[0.95] md:text-[clamp(56px,6vw,88px)] font-semibold tracking-[-0.035em] text-balance [font-stretch:118%]">
             {SITE.tagline}
           </h1>
           <p className="mt-6 max-w-[54ch] text-[19px] leading-[1.6] text-cover-muted">
             Interactive maps, diagrams, timelines and symbols, built on the King James text. Each study is a small
             instrument for seeing one pattern in Scripture clearly.
           </p>
-          <div className="mt-7 flex gap-3">
+          <div className="mt-7 flex flex-wrap gap-3">
             <Link
               href={studyHref("revelation-chiasm")}
               className="inline-flex h-11 items-center rounded-control bg-cover-ink px-5 text-[15px] font-semibold text-cover transition-colors hover:bg-white"

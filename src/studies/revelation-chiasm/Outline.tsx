@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { cn } from "@/lib/cn";
+import { canHover } from "@/lib/pointer";
 import { levelColor } from "./colors";
 import { revRef } from "./format";
 import type { LevelView, MirrorPayload } from "./types";
@@ -40,9 +41,9 @@ export function Outline({
   }, [levels, query]);
 
   return (
-    <div className="pb-6" onMouseLeave={() => onHover(null)}>
+    <div className="pb-6" onPointerLeave={(e) => canHover(e) && onHover(null)}>
       <div className="sticky top-0 z-10 border-b border-s-line bg-s-chrome p-3">
-        <label className="flex h-8 items-center gap-2 rounded-control border border-s-line bg-s-canvas px-2.5 focus-within:border-s-muted/70">
+        <label className="flex h-8 items-center gap-2 rounded-control border border-s-line bg-s-canvas px-2.5 focus-within:border-s-muted/70 pointer-coarse:h-10">
           <span className="sr-only">Filter levels</span>
           <input
             type="search"
@@ -77,11 +78,11 @@ export function Outline({
                     <button
                       type="button"
                       onClick={() => onSelect(level.letter)}
-                      onMouseEnter={() => onHover(level.letter)}
+                      onPointerEnter={(e) => canHover(e) && onHover(level.letter)}
                       aria-current={isSelected ? "true" : undefined}
                       className={cn(
-                        "flex h-8 w-full items-center gap-2.5 rounded-[6px] px-2 text-left text-ui transition-colors duration-100",
-                        isSelected ? "bg-s-raised font-medium text-s-ink shadow-[0_0_0_1px_var(--s-line)]" : isActive ? "bg-s-raised/70" : "text-s-ink hover:bg-s-raised/70",
+                        "flex h-8 w-full items-center gap-2.5 rounded-[6px] px-2 text-left text-ui transition-colors duration-100 select-none pointer-coarse:h-10",
+                        isSelected ? "bg-s-raised font-medium text-s-ink shadow-[0_0_0_1px_var(--s-line)]" : isActive ? "bg-s-raised/70" : "text-s-ink hover:bg-s-raised/70 active:bg-s-raised/70",
                       )}
                     >
                       <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: levelColor(level.colorIndex) }} />

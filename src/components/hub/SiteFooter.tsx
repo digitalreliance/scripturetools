@@ -24,7 +24,7 @@ export function SiteFooter() {
   const [verse] = readPassage(ref);
   return (
     <footer className="bg-paper text-ink">
-      <div className="mx-auto max-w-[1320px] pr-[188px] pb-8 pl-14">
+      <div className="mx-auto max-w-[1320px] pb-8 pl-8 pr-8 min-[720px]:pr-[136px] md:pl-14 lg:pr-[188px]">
         <div className="flex min-h-16 flex-wrap items-center justify-between gap-x-8 border-t border-paper-line py-[13.5px] text-[13px] text-ink-muted">
           <div className="flex items-center gap-7">
             <a href="#cover" aria-label={`${SITE.name}, back to the top`} className="rounded-control text-ink">

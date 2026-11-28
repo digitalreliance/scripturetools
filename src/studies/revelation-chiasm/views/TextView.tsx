@@ -87,8 +87,8 @@ export function TextView({
 
   return (
     <div className="relative h-full">
-      <div ref={scroller} className="scroll-thin h-full overflow-y-auto bg-s-canvas">
-        <article className="mx-auto max-w-[68ch] px-10 py-14 font-scripture text-[18px] leading-[1.8] text-s-ink">
+      <div ref={scroller} className="scroll-thin h-full overflow-y-auto overscroll-contain bg-s-canvas">
+        <article className="mx-auto max-w-[68ch] px-10 py-14 font-scripture text-[18px] leading-[1.8] text-s-ink max-md:px-6 max-md:py-10">
           <header className="mb-10 border-b border-s-line pb-6 font-sans">
             <h2 className="text-[28px] leading-tight font-semibold tracking-[-0.015em] [font-stretch:112%]">The Revelation of St. John the Divine</h2>
             <p className="mt-2 text-ui text-s-muted">
@@ -119,7 +119,7 @@ export function TextView({
                               onSelect(m.level.letter);
                               onFocusHalf(m.prime ? "second" : "first");
                             }}
-                            className="mr-1 inline-flex -translate-y-[0.12em] items-center rounded-[4px] border px-1 align-middle font-sans text-[11px] leading-[16px] font-semibold tabular"
+                            className="mr-1 inline-flex -translate-y-[0.12em] items-center rounded-[4px] border px-1 align-middle font-sans text-[11px] leading-[16px] font-semibold tabular select-none pointer-coarse:px-1.5 pointer-coarse:text-[12px] pointer-coarse:leading-[22px]"
                             style={{ color: levelColor(m.level.colorIndex), borderColor: `color-mix(in oklab, ${levelColor(m.level.colorIndex)} 45%, transparent)` }}
                             aria-label={`Passage ${displayLetter({ letter: m.level.letter, prime: m.prime })}: ${m.level.theme}`}
                           >
@@ -157,7 +157,7 @@ export function TextView({
         <button
           type="button"
           onClick={() => onFocusHalf(focusHalf === "first" ? "second" : "first")}
-          className="absolute right-6 bottom-6 inline-flex h-9 items-center gap-2 rounded-control border border-s-line bg-s-raised px-3 text-ui font-medium text-s-ink shadow-float"
+          className="absolute right-6 bottom-6 inline-flex h-9 items-center gap-2 rounded-control border border-s-line bg-s-raised px-3 text-ui font-medium text-s-ink shadow-float select-none active:brightness-95 pointer-coarse:h-11 pointer-coarse:px-4"
         >
           <ArrowDownUp aria-hidden className="size-4" />
           {focusHalf === "first"

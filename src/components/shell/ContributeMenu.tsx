@@ -29,7 +29,7 @@ export function ContributeMenu({ slug, title }: { slug: string; title: string })
     <MenuFrame
       onOpen={() => setPageUrl(window.location.href)}
       trigger={
-        <ToolButton icon={<GitHubMark />} title="Help improve this study">
+        <ToolButton icon={<GitHubMark />} title="Help improve this study" shortLabel="">
           Contribute
         </ToolButton>
       }
@@ -203,7 +203,7 @@ function MenuLink({ href, icon, label, hint }: { href: string; icon: ReactNode; 
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="group flex cursor-pointer items-start gap-2.5 rounded-control px-2.5 py-2 text-ui outline-none data-[highlighted]:bg-s-canvas [&_svg]:size-4"
+        className="group flex cursor-pointer items-start gap-2.5 rounded-control px-2.5 py-2 text-ui outline-none data-[highlighted]:bg-s-canvas pointer-coarse:py-3 [&_svg]:size-4"
       >
         <span className="mt-px shrink-0 text-s-muted group-data-[highlighted]:text-s-ink">{icon}</span>
         <span className="min-w-0 flex-1">

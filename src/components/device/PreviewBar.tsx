@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { applyViewport, exitPreview, isPreviewing, PREVIEW_VIEWPORT } from "./preview";
 
 /**
- * Shown only in the scaled desktop preview on phones and tablets (CSS decides
+ * Shown only in the scaled desktop preview on phones (CSS decides
  * visibility). The page is laid out 1280 px wide and shrunk to fit, so the bar
  * counter-zooms itself to stay at a normal, tappable size.
  *
@@ -43,7 +43,7 @@ export function PreviewBar() {
     >
       <p className="min-w-0 text-[14px] leading-snug">
         <span className="font-semibold">Desktop preview</span>
-        <span className="block text-cover-muted">Best on a computer. Pinch to zoom.</span>
+        <span className="block text-cover-muted">Best on a tablet or computer. Pinch to zoom.</span>
       </p>
       <button
         type="button"

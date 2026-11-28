@@ -2,8 +2,8 @@ import { SITE } from "@/lib/site";
 
 /**
  * Shared by the boot script and the gate's client components.
- * Preview mode renders the desktop layout at a fixed width, which phones then
- * scale to fit the screen.
+ * Preview mode renders the desktop layout at a fixed width, which a phone then
+ * scales to fit its screen.
  */
 export const PREVIEW_STORAGE_KEY = "scripture:preview";
 export const PREVIEW_VALUE = "desktop";

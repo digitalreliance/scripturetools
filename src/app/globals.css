@@ -5,6 +5,18 @@
  * Only the lead edits this file; components use Tailwind utilities or CSS Modules.
  */
 
+/*
+ * Device variants, set before first paint by DeviceBootScript:
+ *   phone:   on a phone (it sees the device gate unless it chose the preview)
+ *   tablet:  on an iPad or other tablet, running the full app by touch
+ * For sizing controls to a finger, use Tailwind's pointer-coarse: instead; it
+ * also covers touchscreen devices that aren't tablets.
+ * short-landscape: a screen held sideways with little height, like a phone.
+ */
+@custom-variant phone (&:where(html[data-device="phone"] *));
+@custom-variant tablet (&:where(html[data-device="tablet"] *));
+@custom-variant short-landscape (@media (orientation: landscape) and (height < 540px));
+
 @theme inline {
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-baskerville), "Baskerville", "Libre Baskerville", Georgia, serif;
@@ -82,6 +94,28 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* Keep type at its set size when a tablet turns sideways. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Controls give their own pressed state; no grey flash on tap. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /*
+   * Controls answer a tap at once: no wait to see whether it was a double-tap,
+   * and no zooming when a button is tapped twice quickly.
+   */
+  a,
+  button,
+  input,
+  label,
+  select,
+  summary,
+  textarea,
+  [role="button"],
+  [role="tab"],
+  [role="separator"] {
+    touch-action: manipulation;
   }
 
   body {
@@ -128,34 +162,59 @@
   scrollbar-color: var(--s-line, var(--color-paper-line)) transparent;
 }
 
+/* Scrolls (by touch, trackpad or wheel) without showing a scrollbar: for a strip like the status bar. */
+@utility scroll-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Fine fractal grain; place on a pseudo-element or overlay at low opacity. */
 @utility grain {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 .09 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /*
- * Device gate. A blocking script in <head> sets html[data-device="touch"] on
- * phones and tablets before first paint, and html[data-preview="desktop"] once
- * the visitor chooses the scaled desktop preview. The gate overlay carries
- * [data-device-gate] and is hidden until then, so nothing flashes.
+ * Device gate. A blocking script in <head> sets html[data-device="phone"] on
+ * phones before first paint, and html[data-preview="desktop"] once the visitor
+ * chooses the scaled desktop preview. Tablets and computers get the app. The
+ * gate overlay carries [data-device-gate] and is hidden until needed, so
+ * nothing flashes.
  */
 [data-device-gate] {
   display: none;
 }
 
-html[data-device="touch"]:not([data-preview="desktop"]) [data-device-gate] {
+html[data-device="phone"]:not([data-preview="desktop"]) [data-device-gate] {
   display: block;
 }
 
-html[data-device="touch"]:not([data-preview="desktop"]) body > :not([data-device-gate]) {
+html[data-device="phone"]:not([data-preview="desktop"]) body > :not([data-device-gate]) {
   display: none !important;
+}
+
+/*
+ * A window narrower than the layout is made for (SITE.minWindowWidth: Slide
+ * Over on an iPad, a squeezed browser) shows the gate too, asking for more
+ * room; widening the window brings the app straight back, as it was.
+ */
+@media (width < 500px) {
+  html:not([data-device="phone"]) [data-device-gate] {
+    display: block;
+  }
+
+  html:not([data-device="phone"]) body > :not([data-device-gate]) {
+    display: none !important;
+  }
 }
 
 [data-device-preview-bar] {
   display: none;
 }
 
-html[data-device="touch"][data-preview="desktop"] [data-device-preview-bar] {
+html[data-device="phone"][data-preview="desktop"] [data-device-preview-bar] {
   display: flex;
 }
 

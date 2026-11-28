@@ -2,7 +2,7 @@
 
 # Scripture Tools — project guide
 
-A desktop-first web app: one index page of interactive visual Bible studies
+A web app for desk and iPad: one index page of interactive visual Bible studies
 (maps, diagrams, timelines, symbols, typography), each study a self-contained
 micro-app, all built on the public-domain King James text.
 
@@ -61,6 +61,11 @@ Read `node_modules/next/dist/docs/` when unsure; this version differs from older
 - The project's principles come first (README, "The text stays as it is"): never change
   the KJV text, never write commentary or argue for an interpretation, and credit and
   label everything that comes from outside the text.
+- Every page and study works on a computer and an iPad, by mouse, keyboard and touch;
+  phones get the device gate. Follow "Desk and iPad" in `docs/DESIGN.md`: size for a finger
+  under `pointer-coarse:`, gate hover with `canHover` (`src/lib/pointer.ts`), give every
+  keyboard shortcut a button, pass `selection` to `StudyShell`, and check 1440×900,
+  1180×820 and 820×1180. Device thresholds live in `SITE`; `devices.test.ts` keeps CSS in step.
 - Contribute links (GitHub issue forms in `.github/ISSUE_TEMPLATE`) are built in
   `src/lib/contribute.ts`; keep their field ids in step with the forms.
 - The repository's owner is set once, in `SITE.repo` (`src/lib/site.ts`). Docs link to issues

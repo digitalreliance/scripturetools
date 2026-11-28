@@ -1,7 +1,7 @@
 "use client";
 
 import { clsx } from "clsx";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { BOOKS } from "@/lib/bible/canon";
 import { VERSE_COUNTS } from "@/lib/bible/generated/kjv-meta";
 import { loadChapterArcs } from "@/lib/xrefs/client";
@@ -20,6 +20,10 @@ const MAX_VERSES = 176; // Psalm 119
 const REST_ALPHA = 0.8;
 /** Seconds for the resting arcs to settle. */
 const REST_SETTLE = 1.6;
+/** Rough width of a canon group's label (12 px Archivo), to keep neighbours from overlapping. */
+const labelWidth = (name: string) => name.length * 6 + 4;
+/** Labels that would touch the ones before them drop to a line below, this far apart. */
+const LABEL_ROW = 17;
 
 /** Canon group colours in the order the light's shader indexes them. */
 const PALETTE = CANON_GROUPS.map((g) => g.color);
@@ -71,6 +75,11 @@ export function CrossReferenceArcs() {
   const [failed, setFailed] = useState(false);
   const [geometry, setGeometry] = useState<Geometry | null>(null);
   const [book, setBook] = useState<number | null>(null);
+  /**
+   * A finger chose the book. Without hover there is no "pointer left" to
+   * clear it, so it stays, readout and all, until a tap lands elsewhere.
+   */
+  const [pinned, setPinned] = useState(false);
   const woven = useRef(false);
   const lightCanvas = useRef<HTMLCanvasElement>(null);
   /** The light is running (WebGL2 is available and motion is welcome). */
@@ -353,6 +362,17 @@ export function CrossReferenceArcs() {
     };
   }, [lightReady]);
 
+  useEffect(() => {
+    if (!pinned) return;
+    const onDown = (event: PointerEvent) => {
+      if (wrap.current?.contains(event.target as Node)) return;
+      setPinned(false);
+      setBook(null);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [pinned]);
+
   const bookAt = useCallback(
     (x: number) => {
       if (!geometry) return null;
@@ -366,7 +386,7 @@ export function CrossReferenceArcs() {
     [geometry],
   );
 
-  const readout = (() => {
+  const readout = ((): { title: string; rows: string[][]; note: ReactNode } => {
     if (book === null) {
       return {
         title: "The whole Bible",
@@ -375,7 +395,16 @@ export function CrossReferenceArcs() {
           ["Cross references", data ? data.totals.kept.toLocaleString("en-US") : "…"],
           ["Chapter links drawn", data ? data.links.length.toLocaleString("en-US") : "…"],
         ],
-        note: failed ? "The cross references couldn't load. Refresh to try again." : "Point at a book, or focus the figure and use the arrow keys, to trace its connections.",
+        note: failed ? (
+          "The cross references couldn't load. Refresh to try again."
+        ) : (
+          <>
+            <span className="pointer-coarse:hidden">
+              Point at a book, or focus the figure and use the arrow keys, to trace its connections.
+            </span>
+            <span className="hidden pointer-coarse:inline">Touch a book, or slide along them, to trace its connections.</span>
+          </>
+        ),
       };
     }
     const s = stats.perBook[book];
@@ -396,17 +425,28 @@ export function CrossReferenceArcs() {
 
   const groupExtents = useMemo(() => {
     if (!geometry) return [];
-    return CANON_GROUPS.map((g) => {
-      const idx = BOOK_GROUPS.map((x, i) => (x === g.id ? i : -1)).filter((i) => i >= 0);
+    // Labels start at their group (the last one ends at its group, on the
+    // right edge). Where the figure is too narrow for a label to clear the
+    // ones before it, as on an iPad held upright, it drops to the first line
+    // below where it fits.
+    const rowEnds: number[] = [];
+    return CANON_GROUPS.map((g, i) => {
+      const idx = BOOK_GROUPS.map((x, j) => (x === g.id ? j : -1)).filter((j) => j >= 0);
       const start = geometry.books[idx[0]][0];
       const end = geometry.books[idx[idx.length - 1]][1];
-      return { ...g, left: (start / geometry.width) * 100, width: ((end - start) / geometry.width) * 100 };
+      const w = labelWidth(g.name);
+      const [from, to] = i === CANON_GROUPS.length - 1 ? [end - w, end] : [start, start + w];
+      let row = rowEnds.findIndex((rowEnd) => from >= rowEnd + 8);
+      if (row === -1) row = rowEnds.length;
+      rowEnds[row] = to;
+      return { ...g, row, left: (start / geometry.width) * 100, width: ((end - start) / geometry.width) * 100 };
     });
   }, [geometry]);
+  const labelRows = Math.max(1, ...groupExtents.map((g) => g.row + 1));
 
   return (
     <figure className="relative m-0">
-      <div className="mb-3 flex min-h-[72px] items-end justify-between gap-10">
+      <div className="mb-3 flex min-h-[72px] items-end justify-between gap-10 max-md:flex-col max-md:items-start max-md:gap-3">
         <div aria-live="polite">
           <p className="text-[15px] font-semibold tracking-[-0.01em] text-cover-ink [font-stretch:108%]">{readout.title}</p>
           <dl className="mt-2 flex gap-7 text-[13px]">
@@ -418,7 +458,7 @@ export function CrossReferenceArcs() {
             ))}
           </dl>
         </div>
-        <p className="max-w-[340px] text-right text-[13px] leading-relaxed text-cover-muted">{readout.note}</p>
+        <p className="max-w-[340px] text-[13px] leading-relaxed text-cover-muted md:text-right">{readout.note}</p>
       </div>
 
       <div
@@ -426,9 +466,28 @@ export function CrossReferenceArcs() {
         tabIndex={0}
         role="group"
         aria-label="Cross references across the Bible. Use the left and right arrow keys to step through the books."
+        // A mouse or pen points at books as it passes. A finger touches one, or
+        // slides along the spine to scrub through them (touch-pan-y leaves
+        // vertical swipes to scroll the page), and the book stays chosen.
+        onPointerDown={(e) => {
+          if (e.pointerType === "mouse") return;
+          setPinned(e.pointerType === "touch");
+          setBook(bookAt(e.clientX - e.currentTarget.getBoundingClientRect().left));
+        }}
         onPointerMove={(e) => setBook(bookAt(e.clientX - e.currentTarget.getBoundingClientRect().left))}
-        onPointerLeave={() => setBook(null)}
-        onBlur={() => setBook(null)}
+        onPointerLeave={(e) => {
+          if (e.pointerType !== "touch") setBook(null);
+        }}
+        onPointerCancel={(e) => {
+          // The page took the gesture to scroll: let go of the book it began on.
+          if (e.pointerType !== "touch") return;
+          setPinned(false);
+          setBook(null);
+        }}
+        onBlur={() => {
+          setPinned(false);
+          setBook(null);
+        }}
         onKeyDown={(e) => {
           if (e.key === "ArrowRight") {
             e.preventDefault();
@@ -438,7 +497,7 @@ export function CrossReferenceArcs() {
             setBook((b) => (b === null ? BOOKS.length - 1 : Math.max(b - 1, 0)));
           } else if (e.key === "Escape") setBook(null);
         }}
-        className="relative cursor-crosshair rounded-[6px]"
+        className="relative cursor-crosshair touch-pan-y rounded-[6px] select-none [-webkit-touch-callout:none]"
         style={{ height: HEIGHT }}
       >
         <canvas ref={canvas} aria-hidden className="absolute inset-0 h-full w-full" />
@@ -460,12 +519,13 @@ export function CrossReferenceArcs() {
         ) : null}
       </div>
 
-      <div aria-hidden className="relative mt-3 h-9">
+      <div aria-hidden className="relative mt-3" style={{ height: 36 + (labelRows - 1) * LABEL_ROW }}>
         {groupExtents.map((g, i) => (
           <div key={g.id} className="absolute top-0" style={{ left: `${g.left}%`, width: `${g.width}%` }}>
             <div className="h-[2px] rounded-full" style={{ backgroundColor: g.color }} />
             <p
               className={`mt-1.5 text-[12px] whitespace-nowrap text-cover-muted ${i === CANON_GROUPS.length - 1 ? "absolute right-0" : ""}`}
+              style={g.row ? { marginTop: 6 + g.row * LABEL_ROW } : undefined}
             >
               {g.name}
             </p>

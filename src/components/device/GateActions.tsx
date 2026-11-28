@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Monitor, Send } from "lucide-react";
 import { enterPreview } from "./preview";
 
-/** The gate's three choices: send the link on, copy it, or preview anyway. */
+/** The phone gate's three choices: send the link on, copy it, or preview anyway. */
 export function GateActions() {
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
@@ -47,7 +47,7 @@ export function GateActions() {
         className="inline-flex h-12 items-center justify-center gap-2 rounded-control bg-cover-ink px-5 text-[15px] font-semibold text-cover transition-[filter] active:brightness-90"
       >
         {canShare ? <Send aria-hidden className="size-4" /> : <Copy aria-hidden className="size-4" />}
-        {canShare ? "Send link to my computer" : "Copy link"}
+        {canShare ? "Send to my tablet or computer" : "Copy link"}
       </button>
       {canShare ? (
         <button

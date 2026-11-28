@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { cn } from "@/lib/cn";
+import { useCoarsePointer } from "@/lib/hooks/use-coarse-pointer";
+import { canHover } from "@/lib/pointer";
 import { levelColor } from "../colors";
 import { displayLetter } from "../data/chiasm";
 import { formatDistance } from "../data/compute";
@@ -7,7 +9,8 @@ import styles from "../mirror.module.css";
 import { revRef, scrollBehavior } from "../format";
 import type { LevelView, MemberView } from "../types";
 
-const ROW_H = 28;
+/** Row height: 28 px under a mouse, 36 px under a finger. */
+const ROW_H = { fine: 28, coarse: 36 };
 /** Horizontal spacing of the bracket staircase: generous when there's room, tighter on narrow canvases. */
 const MAX_STEP = 5.5;
 const MIN_STEP = 3.4;
@@ -46,11 +49,13 @@ export function ChartView({
     return [...down, ...up].map((row, index) => ({ ...row, index }));
   }, [levels]);
 
+  const coarse = useCoarsePointer();
+  const rowH = coarse ? ROW_H.coarse : ROW_H.fine;
   const [width, setWidth] = useState(900);
   const step = Math.max(MIN_STEP, Math.min(MAX_STEP, (Math.min(width, 920) - 560) / (levels.length - 1)));
   const gutter = PAD + (levels.length - 1) * step + TICK;
-  const height = rows.length * ROW_H + PAD * 2;
-  const rowY = (i: number) => PAD + i * ROW_H + ROW_H / 2;
+  const height = rows.length * rowH + PAD * 2;
+  const rowY = (i: number) => PAD + i * rowH + rowH / 2;
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -73,8 +78,8 @@ export function ChartView({
   return (
     <div
       ref={scroller}
-      className={cn("scroll-thin h-full overflow-y-auto", styles.paper, drawIn && styles.drawIn)}
-      onMouseLeave={() => onHover(null)}
+      className={cn("scroll-thin h-full overflow-y-auto overscroll-contain select-none", styles.paper, drawIn && styles.drawIn)}
+      onPointerLeave={(e) => canHover(e) && onHover(null)}
     >
       <div className="relative mx-auto max-w-[920px]" style={{ height }}>
         <svg
@@ -98,9 +103,9 @@ export function ChartView({
                   d={d}
                   fill="none"
                   stroke="transparent"
-                  strokeWidth={8}
+                  strokeWidth={coarse ? 14 : 8}
                   pointerEvents="stroke"
-                  onMouseEnter={() => onHover(level.letter)}
+                  onPointerEnter={(e) => canHover(e) && onHover(level.letter)}
                   onClick={() => onSelect(level.letter)}
                   className="cursor-pointer"
                 />
@@ -120,7 +125,7 @@ export function ChartView({
           })}
         </svg>
 
-        <ol className="absolute top-0 right-0" style={{ left: gutter, paddingTop: PAD }}>
+        <ol className="absolute top-0 right-2" style={{ left: gutter, paddingTop: PAD }}>
           {rows.map(({ level, member, index }) => {
             const isActive = active === level.letter;
             const dim = active !== null && !isActive;
@@ -128,12 +133,12 @@ export function ChartView({
             const isSelected = selected === level.letter;
             const depth = member.prime ? rows.length - 1 - index : index;
             return (
-              <li key={`${member.letter}${member.prime ? "1" : ""}`} style={{ height: ROW_H }}>
+              <li key={`${member.letter}${member.prime ? "1" : ""}`} style={{ height: rowH }}>
                 <button
                   type="button"
                   data-row={member.prime ? undefined : level.letter}
                   tabIndex={-1}
-                  onMouseEnter={() => onHover(level.letter)}
+                  onPointerEnter={(e) => canHover(e) && onHover(level.letter)}
                   onFocus={() => onHover(level.letter)}
                   onClick={() => onSelect(level.letter)}
                   aria-pressed={isSelected}
@@ -141,7 +146,7 @@ export function ChartView({
                     styles.row,
                     styles.fade,
                     "group flex h-full w-full items-center gap-3 rounded-[6px] pr-3 pl-2 text-left",
-                    isSelected ? "bg-s-raised shadow-[0_0_0_1px_var(--s-line)]" : "hover:bg-s-raised/70",
+                    isSelected ? "bg-s-raised shadow-[0_0_0_1px_var(--s-line)]" : "hover:bg-s-raised/70 active:bg-s-raised/70",
                   )}
                   style={{ opacity: dim ? 0.35 : 1, "--d": `${depth * 26 + 120}ms` } as CSSProperties}
                 >

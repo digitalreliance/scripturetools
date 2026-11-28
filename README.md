@@ -32,9 +32,10 @@ book, a journey, a family line, a pattern of words) and draws it, with every
 verse one click away.
 
 Every study is its own small app with the same frame: an outline on the left,
-the picture in the middle, the verses and details on the right. You can search
-for any study, book or verse from anywhere with <kbd>⌘K</kbd>, and every view
-has a link you can share.
+the picture in the middle, the verses and details on the right. It works on a
+computer or an iPad, by mouse, keyboard or touch, and an iPad can keep it on its
+home screen. You can search for any study, book or verse from anywhere with
+<kbd>⌘K</kbd>, and every view has a link you can share.
 
 ## Studies
 
