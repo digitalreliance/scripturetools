@@ -8,14 +8,14 @@ const link = "underline decoration-paper-line underline-offset-3 transition-colo
 export function Sources() {
   return (
     <section id="sources" aria-labelledby="sources-title" className="border-t border-paper-line bg-paper text-ink">
-      <div className="mx-auto grid max-w-[1320px] grid-cols-12 gap-x-10 pt-14 pr-[188px] pb-12 pl-14">
-        <div className="col-span-4">
+      <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-y-8 pt-14 pb-12 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-0 pl-8 pr-8 min-[720px]:pr-[136px] md:pl-14 lg:pr-[188px]">
+        <div className="lg:col-span-4">
           <h2 id="sources-title" className="text-[24px] leading-tight font-semibold tracking-[-0.02em] [font-stretch:110%]">Sources</h2>
           <p className="mt-2 max-w-[34ch] text-[14px] leading-relaxed text-ink-muted">
             Every text and dataset here is public domain or openly licensed, and credited wherever it appears.
           </p>
         </div>
-        <dl className="col-span-8 grid grid-cols-2 gap-x-10 gap-y-8 text-[14px] leading-relaxed">
+        <dl className="grid grid-cols-1 gap-x-10 gap-y-8 text-[14px] leading-relaxed sm:grid-cols-2 lg:col-span-8">
           <div>
             <dt className="font-semibold">The Bible text</dt>
             <dd className="mt-1.5 text-ink-muted">
@@ -48,10 +48,10 @@ export function Sources() {
             </dd>
           </div>
           <div>
-            <dt className="font-semibold">Designed for desktop</dt>
+            <dt className="font-semibold">Made for computers and tablets</dt>
             <dd className="mt-1.5 text-ink-muted">
-              {SITE.name} is built for screens at least {SITE.minDesktopWidth} pixels wide. Phones and tablets get a link to
-              send to a computer and a scaled preview.
+              {SITE.name} works on a computer or a tablet, an iPad included, by mouse, trackpad, keyboard or touch. Phones
+              get a link to send to a bigger screen, and a scaled preview.
             </dd>
           </div>
         </dl>

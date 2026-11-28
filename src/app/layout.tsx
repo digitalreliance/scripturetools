@@ -41,6 +41,8 @@ export const metadata: Metadata = {
   },
   // The picture itself is app/opengraph-image.tsx; X uses it too.
   twitter: { card: "summary_large_image" },
+  // Added to an iPad's home screen, it opens full screen like an app (see app/manifest.ts).
+  appleWebApp: { capable: true, title: SITE.name, statusBarStyle: "black" },
 };
 
 export const viewport: Viewport = {

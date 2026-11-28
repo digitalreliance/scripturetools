@@ -18,9 +18,27 @@ export const SITE = {
     (process.env.NODE_ENV === "production" ? LIVE_URL : "http://localhost:3000"),
   /** The live site, for links written into the README and docs. */
   liveUrl: LIVE_URL,
-  /** Below this width a desktop browser window is considered cramped. */
-  minDesktopWidth: 1024,
-  /** Layout width used for the scaled desktop preview on phones and tablets. */
+  /**
+   * Computers and tablets get the app; phones get the device gate. A touch
+   * screen counts as a phone when its shorter side is narrower than this, in
+   * CSS pixels: every iPad and almost every tablet is wider, and every phone,
+   * even held sideways, is narrower. (Android draws the same line.)
+   */
+  minTabletWidth: 600,
+  /**
+   * The narrowest window the layout is made for: half of an iPad in Split
+   * View. A narrower window on a tablet or computer (Slide Over, a squeezed
+   * browser) is asked to widen. Mirrored in src/app/globals.css; a test checks.
+   */
+  minWindowWidth: 500,
+  /**
+   * From this window width up, a study's outline and inspector dock beside the
+   * canvas. Below it (an iPad held upright) the outline slides over the canvas
+   * and the inspector sits beneath it. Tailwind's `lg`; mirrored in the study
+   * shell's stylesheet, and checked by the same test.
+   */
+  dockedPanelsWidth: 1024,
+  /** Layout width used for the scaled desktop preview on phones. */
   previewViewportWidth: 1280,
   /**
    * Show studies that aren't built yet on the index (as "Planned" rows) and in

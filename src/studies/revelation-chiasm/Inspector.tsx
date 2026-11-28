@@ -1,4 +1,4 @@
-import { BookOpenText, Footprints } from "lucide-react";
+import { BookOpenText, ChevronDown, ChevronUp, Footprints } from "lucide-react";
 import { Passage } from "@/components/bible/Passage";
 import { InspectorTabs } from "@/components/shell/controls";
 import { Field, PanelSection, ToolButton } from "@/components/shell/parts";
@@ -48,11 +48,13 @@ function PairPanel({
   payload,
   onShowInText,
   onWalk,
+  onStep,
 }: {
   level: LevelView | undefined;
   payload: MirrorPayload;
   onShowInText: (half: "first" | "second") => void;
   onWalk: () => void;
+  onStep: (direction: -1 | 1) => void;
 }) {
   if (!level) {
     return (
@@ -81,18 +83,40 @@ function PairPanel({
           >
             {level.letter}
           </span>
-          <h2 className="text-[16px] font-semibold tracking-[-0.01em]">{level.theme}</h2>
+          <h2 className="min-w-0 flex-1 text-[16px] font-semibold tracking-[-0.01em]">{level.theme}</h2>
+          {/* The arrow keys' job, for a finger or a mouse. */}
+          <div className="-my-1 -mr-1.5 flex shrink-0 text-s-muted">
+            <ToolButton
+              icon={<ChevronUp aria-hidden />}
+              aria-label="Previous level, outward (↑)"
+              title="Previous level, outward (↑)"
+              disabled={level.level === 1}
+              onClick={() => onStep(-1)}
+              className="hover:text-s-ink"
+            />
+            <ToolButton
+              icon={<ChevronDown aria-hidden />}
+              aria-label="Next level, inward (↓)"
+              title="Next level, inward (↓)"
+              disabled={level.level === payload.levels.length}
+              onClick={() => onStep(1)}
+              className="hover:text-s-ink"
+            />
+          </div>
         </div>
         <p className="mt-1.5 text-ui text-s-muted">
           {level.isCenter ? "The centre of the book" : `Level ${level.level} of ${payload.levels.length}, counting inward from the outermost pair`}
         </p>
       </PanelSection>
-      <PanelSection title="First half">
-        <MemberCard member={level.first} level={level} verses={payload.verses} onShowInText={() => onShowInText("first")} />
-      </PanelSection>
-      <PanelSection title="Its mirror">
-        <MemberCard member={level.second} level={level} verses={payload.verses} onShowInText={() => onShowInText("second")} />
-      </PanelSection>
+      {/* Where the inspector is wide (beneath the canvas on an iPad), the two halves sit side by side. */}
+      <div className="border-b border-s-line @2xl/inspector:grid @2xl/inspector:grid-cols-2">
+        <PanelSection title="First half" className="@2xl/inspector:border-r @2xl/inspector:border-b-0">
+          <MemberCard member={level.first} level={level} verses={payload.verses} onShowInText={() => onShowInText("first")} />
+        </PanelSection>
+        <PanelSection title="Its mirror">
+          <MemberCard member={level.second} level={level} verses={payload.verses} onShowInText={() => onShowInText("second")} />
+        </PanelSection>
+      </div>
       <PanelSection title="Symmetry">
         <Field label="Before the centre">{formatNumber(level.symmetry.before)} verses</Field>
         <Field label="After the centre">{formatNumber(level.symmetry.after)} verses</Field>
@@ -117,7 +141,7 @@ function PairPanel({
 function AboutPanel({ payload, onShowWelcome }: { payload: MirrorPayload; onShowWelcome: () => void }) {
   const { stats } = payload;
   return (
-    <div className="text-ui leading-relaxed">
+    <div className="text-ui leading-relaxed @2xl/inspector:grid @2xl/inspector:grid-cols-2 @2xl/inspector:[&>section:nth-child(odd):not(:last-child)]:border-r">
       <PanelSection title="A book built like a mirror">
         <div className="space-y-3 text-s-ink">
           <p>
@@ -212,6 +236,7 @@ export function Inspector({
   onTab,
   onShowInText,
   onWalk,
+  onStep,
   onShowWelcome,
 }: {
   payload: MirrorPayload;
@@ -220,6 +245,7 @@ export function Inspector({
   onTab: (tab: string) => void;
   onShowInText: (half: "first" | "second") => void;
   onWalk: () => void;
+  onStep: (direction: -1 | 1) => void;
   onShowWelcome: () => void;
 }) {
   return (
@@ -228,7 +254,7 @@ export function Inspector({
       onValueChange={onTab}
       label="Inspector"
       tabs={[
-        { value: "pair", label: "Pair", meta: level ? level.letter : undefined, content: <PairPanel level={level} payload={payload} onShowInText={onShowInText} onWalk={onWalk} /> },
+        { value: "pair", label: "Pair", meta: level ? level.letter : undefined, content: <PairPanel level={level} payload={payload} onShowInText={onShowInText} onWalk={onWalk} onStep={onStep} /> },
         { value: "about", label: "About", content: <AboutPanel payload={payload} onShowWelcome={onShowWelcome} /> },
       ]}
     />

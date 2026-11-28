@@ -88,8 +88,10 @@ single accented word inside a headline, no `→` glued to button text, no
 
 ## Layout
 
-- Desktop first: designed at 1440, works from 1024. Phones and tablets get the
-  device gate, then an optional scaled desktop preview.
+- **Desk and iPad.** Designed at 1440, and built to work on a computer or a
+  tablet, from a 500 px window (half an iPad in Split View) up, by mouse,
+  trackpad, keyboard, pencil or finger. Phones get the device gate, then an
+  optional scaled desktop preview. See **Desk and iPad** below.
 - Hub: the **cover** (dark hero with the cross-reference arcs) opens onto the
   **pages** (paper). The contents of the pages are navigated by a **thumb index**
   fixed to the right edge: one tab per category, the current one pulled out.
@@ -119,6 +121,83 @@ single accented word inside a headline, no `→` glued to button text, no
 - 8 px grid. Radii follow hierarchy: plates 16, panels 10, controls 8, tags 5.
   Shadows only on things that truly float (menus, the command palette, popovers).
 
+## Desk and iPad
+
+Scripture Tools is made for the two places people study at length: a desk and
+an iPad. Every page, and every study from now on, works on both. Phones see the
+device gate instead (below).
+
+### Who gets what
+
+A blocking script in `<head>` (`DeviceBootScript`) sorts the device before
+the first paint, by its screen rather than its window, so turning it or
+splitting the screen never changes the answer:
+
+| Device | Rule | Gets |
+|---|---|---|
+| Computer | anything with a fine pointer (touchscreen laptops included) | the app |
+| Tablet | touch-first, shorter screen side at least `SITE.minTabletWidth` (600 px) | the app, tuned for touch (`html[data-device="tablet"]`) |
+| Phone | touch-first, shorter side under 600 px, even held sideways | the device gate (`html[data-device="phone"]`) |
+
+A window narrower than `SITE.minWindowWidth` (500 px: Slide Over, a squeezed
+browser) shows the gate's other face, asking for a wider window; widening it
+brings everything back as it was.
+
+### Layout by width
+
+- **1024 px and up** (`SITE.dockedPanelsWidth`; a computer, an iPad on its
+  side): the full layout. A study's outline, canvas and inspector sit side by
+  side.
+- **Under 1024 px** (an iPad held upright): the hub's carousel and contents
+  stack, the thumb index slims to its names, and in a study the canvas takes
+  the width. The outline slides over it from the left. The inspector sits
+  beneath it at a height the reader drags, or drags down to put away, and
+  choosing something brings it up. A wide inspector can lay content side by
+  side (`@container/inspector`), as Revelation's mirror does with a pair's two
+  halves.
+- **Under 720 px**: the thumb index steps aside, and top-bar buttons with a
+  `shortLabel` show only their icons.
+
+### Touch rules (for every study)
+
+1. **Size for a finger.** Under `pointer-coarse:` controls grow from 32 to
+   40 px, the top bar from 48 to 56, and list rows to at least 36. The shell's
+   parts (`ToolButton`, `Segmented`, `InspectorTabs`, `ShellSearch`) do this
+   already; size anything new the same way. Marks in a diagram get an
+   invisible hit area of at least ~24 px (`useCoarsePointer` for sizes drawn
+   in script).
+2. **Hover only previews.** Gate hover handlers with `canHover`
+   (`src/lib/pointer.ts`) so a tap selects instead of leaving a preview stuck.
+   Nothing may be reachable only by hovering.
+3. **Every shortcut has a button.** Keys are a shortcut, never the only way:
+   arrow keys have step buttons, `[` and `]` have panel toggles, F has Fold.
+   Keyboard hints (`⌘K`, "Press F") hide under `pointer-coarse:`, and hint copy
+   says what a finger does instead ("Point at a book" becomes "Touch a book").
+4. **Gestures stay simple.** Tap to choose; slide to scrub along a scale
+   (`touch-pan-y`, so vertical swipes still scroll the page); drag only a
+   visible handle. No long-press-only and no multi-finger-only actions.
+5. **Text you read stays selectable; chrome doesn't.** Scripture can be
+   selected and copied. Diagram labels and controls are `select-none`, so a
+   long press doesn't select them.
+6. **Feedback without hover.** Hover styles only apply where hover exists
+   (Tailwind's `hover:`), so pressed controls also get an `active:` state.
+   Taps never flash grey and never wait for a double-tap.
+7. **Check it on both.** Look at every change at 1440×900, iPad landscape
+   (1180×820) and iPad upright (820×1180), by touch as well as by mouse.
+
+### The phone gate
+
+It says what the link opens (on a study's page, the study's name and summary),
+then offers to send the link to a tablet or computer (the system share sheet),
+copy it, or preview the desktop layout scaled to fit. On a phone held sideways
+it lays out in two columns. The preview is remembered.
+
+### On the home screen
+
+Added to an iPad's home screen, the site opens full screen like an app
+(`app/manifest.ts`, `app/apple-icon.tsx`). With no address bar there, each
+study's **Share** button is how a view gets passed on.
+
 ## Studies (micro-apps)
 
 Every study renders inside `StudyShell` (`src/components/shell`):
@@ -134,15 +213,23 @@ Every study renders inside `StudyShell` (`src/components/shell`):
 └────────────────────────────────────────────────────────────────────┘
 ```
 
-The top bar always ends with **Contribute** (before the inspector toggle),
-rendered by `StudyShell` from the study's `slug`: report a mistake or suggest an
+Under 1024 px the same frame rearranges (see **Desk and iPad**): the outline
+slides over the canvas and the inspector moves beneath it.
+
+The top bar always ends with **Share** and **Contribute** (before the
+inspector toggle). Share sends a link to the exact view, hash included: the
+share sheet under a finger, the clipboard elsewhere. **Contribute** is
+rendered by `StudyShell` from the study's `slug`. It offers to report a mistake or suggest an
 improvement (a GitHub issue prefilled with the study and the exact view, hash
 included), or read the study's code, then the project on GitHub. The hub's navigation
 opens the same menu (`SiteContributeMenu`) for the whole project. Links are built in `src/lib/contribute.ts`
 from `SITE.repo`.
 
 Shareable state lives in the URL hash. Every study has a keyboard path through
-its main interaction and visible focus. Panels collapse with `[` and `]`.
+its main interaction and visible focus, and a touch path through everything
+(see the touch rules). Panels collapse with `[` and `]`. Pass the shell the
+reader's current choice as `selection`, so that under 1024 px choosing
+something brings up the inspector.
 
 ## Motion
 

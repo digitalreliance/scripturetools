@@ -51,10 +51,10 @@ export function Contents({ groups, recent }: { groups: ContentsGroup[]; recent: 
   const total = groups.reduce((n, g) => n + g.studies.length, 0);
   return (
     <main id="contents" className="bg-paper text-ink">
-      <div className="mx-auto max-w-[1320px] pt-20 pr-[188px] pb-10 pl-14">
+      <div className="mx-auto max-w-[1320px] pt-20 pb-10 pl-8 pr-8 min-[720px]:pr-[136px] md:pl-14 lg:pr-[188px]">
         <RecentStudies studies={recent} />
 
-        <div className="mt-24 mb-2 flex items-end justify-between gap-10">
+        <div className="mt-24 mb-2 flex items-end justify-between gap-10 max-md:flex-col max-md:items-start max-md:gap-5">
           <div>
             <h2 className="text-[40px] leading-none font-semibold tracking-[-0.03em] [font-stretch:115%]">Contents</h2>
             <p className="mt-3 max-w-[60ch] text-[15px] leading-relaxed text-ink-muted">
@@ -70,15 +70,15 @@ export function Contents({ groups, recent }: { groups: ContentsGroup[]; recent: 
             key={category.id}
             id={category.id}
             aria-labelledby={`${category.id}-title`}
-            className="grid scroll-mt-10 grid-cols-12 gap-x-10 border-t border-paper-line pt-9 pb-8"
+            className="grid scroll-mt-10 grid-cols-1 gap-y-3 border-t border-paper-line pt-9 pb-8 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-0"
           >
-            <div className="col-span-4">
+            <div className="lg:col-span-4">
               <h3 id={`${category.id}-title`} className="text-[24px] leading-tight font-semibold tracking-[-0.02em] [font-stretch:110%]">
                 {category.title}
               </h3>
-              <p className="mt-2 max-w-[34ch] text-[14px] leading-relaxed text-ink-muted">{category.description}</p>
+              <p className="mt-2 max-w-[60ch] text-[14px] leading-relaxed text-ink-muted lg:max-w-[34ch]">{category.description}</p>
             </div>
-            <ul className="col-span-8 divide-y divide-paper-line">
+            <ul className="divide-y divide-paper-line lg:col-span-8">
               {studies.map((study) => (
                 <StudyRow key={study.slug} study={study} />
               ))}

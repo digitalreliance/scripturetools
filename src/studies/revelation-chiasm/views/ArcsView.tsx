@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
+import { useCoarsePointer } from "@/lib/hooks/use-coarse-pointer";
+import { canHover } from "@/lib/pointer";
 import { levelColor } from "../colors";
 import { CENTER } from "../data/compute";
 import { prefersReducedMotion } from "../format";
@@ -43,6 +45,7 @@ export function ArcsView({
   onHover: (letter: string | null) => void;
   onSelect: (letter: string) => void;
 }) {
+  const coarse = useCoarsePointer();
   // Fold progress: 0 flat, 1 folded.
   const [t, setT] = useState(folded ? 1 : 0);
   const tRef = useRef(t);
@@ -87,7 +90,7 @@ export function ArcsView({
   const mid = (span: { first: number; last: number }) => (span.first + span.last) / 2;
 
   return (
-    <div className={cn("flex h-full flex-col", styles.paper)} onMouseLeave={() => onHover(null)}>
+    <div className={cn("flex h-full flex-col select-none", styles.paper)} onPointerLeave={(e) => canHover(e) && onHover(null)}>
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="min-h-0 w-full flex-1"
@@ -111,7 +114,7 @@ export function ArcsView({
           const dim = active !== null && !isActive;
           return (
             <g key={level.letter} className={styles.fade} style={{ opacity: dim ? 0.14 : 1 }}>
-              <path d={d} fill="none" stroke="transparent" strokeWidth={9} pointerEvents="stroke" className="cursor-pointer" onMouseEnter={() => onHover(level.letter)} onClick={() => onSelect(level.letter)} />
+              <path d={d} fill="none" stroke="transparent" strokeWidth={coarse ? 22 : 9} pointerEvents="stroke" className="cursor-pointer" onPointerEnter={(e) => canHover(e) && onHover(level.letter)} onClick={() => onSelect(level.letter)} />
               <path d={d} fill="none" stroke={levelColor(level.colorIndex)} strokeWidth={isActive ? 2.6 : level.isCenter ? 2 : 1.3} strokeOpacity={isActive ? 1 : 0.85} pointerEvents="none" />
             </g>
           );
@@ -220,9 +223,15 @@ export function ArcsView({
         })() : null}
       </svg>
       <p className="px-6 pb-4 text-[12px] leading-relaxed text-s-muted">
-        {folded
-          ? "Folded at the centre. Each passage now sits across the fold from its mirror; the more upright a line, the closer the match."
-          : "Each arc joins a passage to its mirror. Chapters run left to right; the centre falls between 12:9 and 12:10. Press F to fold."}
+        {folded ? (
+          "Folded at the centre. Each passage now sits across the fold from its mirror; the more upright a line, the closer the match."
+        ) : (
+          <>
+            Each arc joins a passage to its mirror. Chapters run left to right; the centre falls between 12:9 and 12:10.{" "}
+            <span className="pointer-coarse:hidden">Press F to fold.</span>
+            <span className="hidden pointer-coarse:inline">Tap Fold, above, to fold it.</span>
+          </>
+        )}
       </p>
     </div>
   );

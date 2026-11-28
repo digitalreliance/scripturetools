@@ -1,0 +1,211 @@
+/*
+ * The study frame's two layouts. The width where they meet is
+ * SITE.dockedPanelsWidth (1024 px); keep the media queries below in step with
+ * it (src/lib/__tests__/devices.test.ts checks).
+ *
+ *   docked   1024 px and up: outline | canvas | inspector, side by side.
+ *   compact  narrower, as on an iPad held upright: the canvas takes the whole
+ *            width, the outline slides over it from the left, and the
+ *            inspector sits beneath it at a height the reader can drag.
+ *
+ * Each layout keeps its own open and closed panels in data attributes on
+ * .body, so the first paint is right before any script has run.
+ */
+
+.body {
+  position: relative;
+  display: grid;
+  min-height: 0;
+}
+
+.canvas {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar,
+.inspector {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--s-chrome);
+}
+
+/* Each panel scrolls on its own, without dragging the page along at its ends. */
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sidebarInner {
+  width: var(--sidebar-w);
+}
+
+@media (width >= 1024px) {
+  .body {
+    --sidebar: 0px;
+    --inspector: 0px;
+    grid-template-columns: var(--sidebar) minmax(0, 1fr) var(--inspector);
+    transition: grid-template-columns 200ms var(--ease-out-quint);
+  }
+
+  .body[data-docked-sidebar="open"] {
+    --sidebar: var(--sidebar-w);
+  }
+
+  .body[data-docked-inspector="open"] {
+    --inspector: var(--inspector-w);
+  }
+
+  .body[data-docked-sidebar="open"] .sidebar {
+    border-right: 1px solid var(--s-line);
+  }
+
+  .body[data-docked-inspector="open"] .inspector {
+    border-left: 1px solid var(--s-line);
+  }
+
+  .sidebar {
+    grid-area: 1 / 1;
+  }
+
+  .canvas {
+    grid-area: 1 / 2;
+  }
+
+  .inspector {
+    grid-area: 1 / 3;
+  }
+
+  /* Panels keep their width while they open and close, so nothing reflows. */
+  .inspectorInner {
+    width: var(--inspector-w);
+  }
+
+  .scrim,
+  .grabber {
+    display: none;
+  }
+}
+
+@media (width < 1024px) {
+  .body {
+    --inspector-rows: 0px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) var(--inspector-rows);
+    transition: grid-template-rows 260ms var(--ease-out-quint);
+  }
+
+  .body[data-compact-inspector="open"] {
+    --inspector-rows: clamp(160px, var(--inspector-h, 44%), calc(100% - 96px));
+  }
+
+  /* While the reader drags the inspector's edge, it follows the finger exactly. */
+  .body[data-resizing] {
+    transition: none;
+  }
+
+  .canvas {
+    grid-area: 1 / 1;
+  }
+
+  .inspector {
+    grid-area: 2 / 1;
+    border-top: 1px solid var(--s-line);
+  }
+
+  .body[data-compact-inspector="closed"] .inspector {
+    visibility: hidden;
+    transition: visibility 0s linear 260ms;
+  }
+
+  .inspectorInner {
+    width: 100%;
+  }
+
+  .sidebar {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    z-index: 30;
+    width: min(var(--sidebar-w), 86%);
+    border-right: 1px solid var(--s-line);
+    box-shadow: var(--shadow-float);
+    visibility: hidden;
+    transform: translateX(calc(-100% - 32px));
+    transition:
+      transform 260ms var(--ease-out-quint),
+      visibility 0s linear 260ms;
+  }
+
+  .body[data-compact-sidebar="open"] .sidebar {
+    visibility: visible;
+    transform: none;
+    transition: transform 260ms var(--ease-out-quint);
+  }
+
+  .sidebarInner {
+    width: 100%;
+  }
+
+  /* Behind the sliding outline: a tap here puts it away. */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 25;
+    background: rgb(20 18 16 / 0.18);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 260ms var(--ease-out-quint);
+  }
+
+  .body[data-compact-sidebar="open"] .scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* The inspector's top edge: drag it to resize, or down to put it away. */
+  .grabber {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    cursor: row-resize;
+    touch-action: none;
+    outline-offset: -2px;
+  }
+
+  .grabber::before {
+    content: "";
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--s-line);
+    transition: background-color 120ms;
+  }
+
+  .grabber:focus-visible::before,
+  .body[data-resizing] .grabber::before {
+    background: var(--s-muted);
+  }
+
+  @media (hover: hover) {
+    .grabber:hover::before {
+      background: var(--s-muted);
+    }
+  }
+
+  @media (pointer: coarse) {
+    .grabber {
+      height: 24px;
+    }
+  }
+}

@@ -179,9 +179,10 @@ export function StudyCarousel({ slides, label }: { slides: CarouselSlide[]; labe
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false);
       }}
     >
-      <div className="grid grid-cols-12 items-center gap-x-12">
+      {/* Side by side from 1024 px; above and below on an iPad held upright. */}
+      <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-12 lg:items-center lg:gap-x-12">
         {/* One frame; the drawings stack inside it and the new one fades in over the old. */}
-        <div className="col-span-7 grid overflow-hidden rounded-plate border border-paper-line bg-paper-raised">
+        <div className="grid overflow-hidden rounded-plate border border-paper-line bg-paper-raised lg:col-span-7">
           {slides.map((slide, i) => {
             const current = i === active;
             const playing = current && (demo === "armed" || demo === "playing");
@@ -207,7 +208,7 @@ export function StudyCarousel({ slides, label }: { slides: CarouselSlide[]; labe
           })}
         </div>
 
-        <div className="col-span-5 grid" aria-live={multiple ? (rotating ? "off" : "polite") : undefined}>
+        <div className="grid lg:col-span-5" aria-live={multiple ? (rotating ? "off" : "polite") : undefined}>
           {slides.map((slide, i) => {
             const current = i === active;
             return (

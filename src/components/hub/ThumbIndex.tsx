@@ -14,7 +14,8 @@ export interface ThumbTab {
 /**
  * The cut tabs on a printed Bible's fore-edge, as navigation: one tab per
  * section, fixed to the right edge once the pages begin. The current section's
- * tab is pulled out.
+ * tab is pulled out. Below 1024 px the tabs slim down to their names; below
+ * 720 px, where the pages need every pixel, they step aside.
  */
 export function ThumbIndex({ tabs }: { tabs: ThumbTab[] }) {
   const [current, setCurrent] = useState<string | null>(null);
@@ -48,7 +49,7 @@ export function ThumbIndex({ tabs }: { tabs: ThumbTab[] }) {
     <nav
       aria-label="Sections"
       className={clsx(
-        "fixed top-1/2 right-0 z-40 -translate-y-1/2 transition-[opacity,translate] duration-300 ease-out-quint",
+        "fixed top-1/2 right-0 z-40 -translate-y-1/2 transition-[opacity,translate] duration-300 ease-out-quint max-[719px]:hidden",
         shown ? "opacity-100" : "pointer-events-none translate-x-6 opacity-0",
       )}
     >
@@ -62,15 +63,15 @@ export function ThumbIndex({ tabs }: { tabs: ThumbTab[] }) {
                 aria-current={active ? "location" : undefined}
                 tabIndex={shown ? 0 : -1}
                 className={clsx(
-                  "flex h-9 items-center gap-3 rounded-l-[10px] border border-r-0 pr-4 pl-4 text-[13px] font-medium transition-[width,background-color,color] duration-200 ease-out-quint",
+                  "flex h-9 items-center gap-3 rounded-l-[10px] border border-r-0 pr-4 pl-4 text-[13px] font-medium transition-[width,background-color,color] duration-200 ease-out-quint max-lg:pr-2 max-lg:pl-3",
                   active
-                    ? "w-[158px] border-ink bg-ink text-paper"
-                    : "w-[140px] border-paper-line bg-paper-raised text-ink-muted hover:w-[148px] hover:text-ink",
+                    ? "w-[158px] border-ink bg-ink text-paper max-lg:w-[120px]"
+                    : "w-[140px] border-paper-line bg-paper-raised text-ink-muted hover:w-[148px] hover:text-ink max-lg:w-[108px] max-lg:hover:w-[114px]",
                 )}
                 style={{ marginRight: 0, transitionDelay: shown ? `${i * 18}ms` : "0ms" }}
               >
                 <span className="truncate">{tab.label}</span>
-                <span className="ml-auto text-[12px] tabular opacity-70">{tab.count}</span>
+                <span className="ml-auto text-[12px] tabular opacity-70 max-lg:hidden">{tab.count}</span>
               </a>
             </li>
           );

@@ -1,4 +1,6 @@
 import { cn } from "@/lib/cn";
+import { useCoarsePointer } from "@/lib/hooks/use-coarse-pointer";
+import { canHover } from "@/lib/pointer";
 import { levelColor } from "../colors";
 import { displayLetter } from "../data/chiasm";
 import { formatNumber, revRef } from "../format";
@@ -27,6 +29,7 @@ export function SymmetryView({
   onHover: (letter: string | null) => void;
   onSelect: (letter: string) => void;
 }) {
+  const coarse = useCoarsePointer();
   const sx = (v: number) => M.left + (v / MAX) * SIZE;
   const sy = (v: number) => M.top + SIZE - (v / MAX) * SIZE;
   const W = M.left + SIZE + M.right;
@@ -35,11 +38,11 @@ export function SymmetryView({
   const maxLevel = levels.find((l) => l.letter === stats.maxLetter);
 
   return (
-    <div className={cn("@container h-full overflow-auto", styles.paper)} onMouseLeave={() => onHover(null)}>
+    <div className={cn("@container h-full overflow-auto overscroll-contain", styles.paper)} onPointerLeave={(e) => canHover(e) && onHover(null)}>
       <div className="flex min-h-full flex-col items-center justify-center gap-6 px-10 py-8 @3xl:flex-row @3xl:gap-12">
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="aspect-[528/520] w-full max-w-[520px] shrink-0 @3xl:h-[min(620px,calc(100dvh-170px))] @3xl:w-auto @3xl:max-w-none"
+        className="aspect-[528/520] w-full max-w-[520px] shrink-0 select-none @3xl:h-[min(620px,calc(100dvh-170px))] @3xl:w-auto @3xl:max-w-none"
         role="img"
         aria-label={`Scatter plot of the 51 levels: verses before the centre against verses after it. Correlation ${stats.correlation.toFixed(4)}; the two halves differ by ${formatNumber(stats.meanAbsDelta)} verses on average.`}
       >
@@ -70,19 +73,21 @@ export function SymmetryView({
           const isActive = active === level.letter;
           const dim = active !== null && !isActive;
           return (
-            <circle
-              key={level.letter}
-              cx={sx(before)}
-              cy={sy(after)}
-              r={isActive ? 7.5 : 5}
-              fill={levelColor(level.colorIndex)}
-              stroke="var(--s-canvas)"
-              strokeWidth={1.5}
-              opacity={dim ? 0.25 : 1}
-              className={cn(styles.fade, "cursor-pointer")}
-              onMouseEnter={() => onHover(level.letter)}
-              onClick={() => onSelect(level.letter)}
-            />
+            <g key={level.letter} className="cursor-pointer" onPointerEnter={(e) => canHover(e) && onHover(level.letter)} onClick={() => onSelect(level.letter)}>
+              {/* A larger, invisible target around each point, larger still under a finger. */}
+              <circle cx={sx(before)} cy={sy(after)} r={coarse ? 15 : 9} fill="transparent" />
+              <circle
+                cx={sx(before)}
+                cy={sy(after)}
+                r={isActive ? 7.5 : 5}
+                fill={levelColor(level.colorIndex)}
+                stroke="var(--s-canvas)"
+                strokeWidth={1.5}
+                opacity={dim ? 0.25 : 1}
+                pointerEvents="none"
+                className={styles.fade}
+              />
+            </g>
           );
         })}
 

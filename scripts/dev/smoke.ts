@@ -1,11 +1,14 @@
 /**
- * End-to-end smoke test in the installed Google Chrome.
+ * End-to-end smoke test in the installed Google Chrome (set CHROME_PATH to use
+ * another Chromium).
  *
  *   npx tsx scripts/dev/smoke.ts [baseUrl]     (default http://localhost:3000)
  *
  * Visits every key page at desktop size, checks the HTTP status and that the
  * page rendered real content, and fails on console errors, page errors or
- * failed requests. Then checks the phone gate. Exits non-zero on any failure.
+ * failed requests. Then checks each device gets the right screen: the app on
+ * iPads, the gate on phones and in windows too narrow for the layout. Exits
+ * non-zero on any failure.
  */
 import { chromium, devices } from "playwright-core";
 
@@ -34,7 +37,8 @@ const IGNORED = [
 
 async function main() {
   const base = (process.argv[2] ?? "http://localhost:3000").replace(/\/$/, "");
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const executablePath = process.env.CHROME_PATH;
+  const browser = await chromium.launch(executablePath ? { executablePath, headless: true } : { channel: "chrome", headless: true });
   let failures = 0;
 
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -73,16 +77,34 @@ async function main() {
   }
   await desktop.close();
 
-  // Phones see the gate, not the app.
-  const phone = await browser.newContext(devices["iPhone 15"]);
-  const page = await phone.newPage();
-  await page.goto(base + "/", { waitUntil: "networkidle" });
-  const gateVisible = await page.locator("[data-device-gate]").isVisible();
-  const appHidden = !(await page.getByText(/see how the bible fits together/i).first().isVisible().catch(() => false));
-  const gateOk = gateVisible && appHidden;
-  if (!gateOk) failures++;
-  console.log(`${gateOk ? "pass" : "FAIL"}  phone gate (gate visible: ${gateVisible}, app hidden: ${appHidden})`);
-  await phone.close();
+  // Desk and iPad get the app; phones, and windows too narrow for it, get the gate.
+  const DEVICE_CHECKS: {
+    name: string;
+    context: Parameters<typeof browser.newContext>[0];
+    path: string;
+    gate: boolean;
+    /** Visible text that proves the right screen rendered. */
+    expect: RegExp;
+  }[] = [
+    { name: "phone, hub", context: devices["iPhone 15"], path: "/", gate: true, expect: /Made for a larger screen/ },
+    { name: "phone, study", context: devices["iPhone 15"], path: "/studies/revelation-chiasm", gate: true, expect: /This link opens/ },
+    { name: "phone held sideways", context: devices["iPhone 15 landscape"], path: "/", gate: true, expect: /Made for a larger screen/ },
+    { name: "iPad, hub", context: devices["iPad Pro 11"], path: "/", gate: false, expect: /see how the bible fits together/i },
+    { name: "iPad upright, study", context: devices["iPad Pro 11"], path: "/studies/revelation-chiasm", gate: false, expect: /Walk/ },
+    { name: "iPad on its side, study", context: devices["iPad Pro 11 landscape"], path: "/studies/revelation-chiasm", gate: false, expect: /Walk to the centre/ },
+    { name: "narrow window", context: { viewport: { width: 420, height: 800 } }, path: "/", gate: true, expect: /Make the window wider/ },
+  ];
+  for (const check of DEVICE_CHECKS) {
+    const context = await browser.newContext(check.context);
+    const page = await context.newPage();
+    await page.goto(base + check.path, { waitUntil: "networkidle" });
+    const gateVisible = await page.locator("[data-device-gate]").isVisible();
+    const textVisible = await page.getByText(check.expect).first().isVisible().catch(() => false);
+    const ok = gateVisible === check.gate && textVisible;
+    if (!ok) failures++;
+    console.log(`${ok ? "pass" : "FAIL"}  ${check.name} (gate ${gateVisible ? "shown" : "hidden"}, expected text ${textVisible ? "found" : "missing"})`);
+    await context.close();
+  }
 
   await browser.close();
   console.log(failures ? `\n${failures} check(s) failed` : "\nall checks passed");

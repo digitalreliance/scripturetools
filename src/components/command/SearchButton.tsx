@@ -12,7 +12,7 @@ export function SearchButton({ tone = "paper", className }: { tone?: "cover" | "
   return (
     <OpenPaletteButton
       className={cn(
-        "inline-flex h-9 items-center gap-2.5 rounded-control border pr-2 pl-3 text-[13px] transition-colors",
+        "inline-flex h-9 shrink-0 items-center gap-2.5 rounded-control border pr-2 pl-3 text-[13px] whitespace-nowrap transition-colors max-sm:px-2.5",
         tone === "cover"
           ? "border-cover-line bg-cover-raised/60 text-cover-muted hover:border-cover-muted/50 hover:text-cover-ink"
           : "border-paper-line bg-paper-raised text-ink-muted hover:border-ink-faint hover:text-ink",
@@ -20,8 +20,9 @@ export function SearchButton({ tone = "paper", className }: { tone?: "cover" | "
       )}
     >
       <Search aria-hidden className="size-3.5" />
-      <span>Search studies</span>
-      <Kbd className="ml-3">⌘K</Kbd>
+      <span className="max-sm:sr-only">Search studies</span>
+      {/* A keyboard shortcut means nothing to a finger, or in a narrow window. */}
+      <Kbd className="ml-3 max-sm:hidden pointer-coarse:hidden">⌘K</Kbd>
     </OpenPaletteButton>
   );
 }

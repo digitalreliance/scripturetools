@@ -161,6 +161,16 @@ export function RevelationMirror({
     setWalking(true);
   }, [walking, selectedLevel, setLevelParam]);
 
+  /** One level inward (1) or outward (−1) from the selection; the arrow keys and the inspector's buttons. */
+  const step = useCallback(
+    (direction: -1 | 1) => {
+      setWalking(false);
+      const index = selectedLevel ? selectedLevel.level - 1 : -1;
+      select(levels[Math.min(Math.max(index + direction, 0), levels.length - 1)].letter);
+    },
+    [selectedLevel, levels, select],
+  );
+
   const toggleFold = useCallback(() => {
     setFolded((v) => !v);
     if (view !== "arcs") setView("arcs");
@@ -170,7 +180,6 @@ export function RevelationMirror({
     function onKey(event: KeyboardEvent) {
       if (event.metaKey || event.ctrlKey || event.altKey || isTyping(event.target)) return;
       const onControl = event.target instanceof HTMLElement && event.target.closest("button, a, [role=tab]");
-      const index = selectedLevel ? selectedLevel.level - 1 : -1;
       switch (event.key) {
         case "1":
         case "2":
@@ -180,13 +189,11 @@ export function RevelationMirror({
           break;
         case "ArrowDown":
           event.preventDefault();
-          setWalking(false);
-          select(levels[Math.min(index + 1, levels.length - 1)].letter);
+          step(1);
           break;
         case "ArrowUp":
           event.preventDefault();
-          setWalking(false);
-          select(levels[Math.max(index - 1, 0)].letter);
+          step(-1);
           break;
         case "f":
         case "F":
@@ -208,7 +215,7 @@ export function RevelationMirror({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [levels, selectedLevel, walking, welcome, select, setView, toggleFold, toggleWalk, dismissWelcome]);
+  }, [walking, welcome, select, step, setView, toggleFold, toggleWalk, dismissWelcome]);
 
   const showInText = useCallback(
     (half: "first" | "second") => {
@@ -268,6 +275,7 @@ export function RevelationMirror({
               aria-pressed={folded}
               onClick={toggleFold}
               title="Fold at the centre (F)"
+              shortLabel={folded ? "Unfold" : "Fold"}
             >
               {folded ? "Unfold" : "Fold"}
             </ToolButton>
@@ -278,6 +286,7 @@ export function RevelationMirror({
             onClick={toggleWalk}
             aria-pressed={walking}
             title="Walk to the centre (Space)"
+            shortLabel={walking ? "Pause" : "Walk"}
           >
             {walking ? "Pause" : "Walk to the centre"}
           </ToolButton>
@@ -300,6 +309,8 @@ export function RevelationMirror({
         />
       }
       sidebarLabel="Outline"
+      // A walk counts as one choice, so an inspector put away during it stays away.
+      selection={walking ? "walk" : selected}
       inspector={
         <Inspector
           payload={payload}
@@ -308,6 +319,7 @@ export function RevelationMirror({
           onTab={setTab}
           onShowInText={showInText}
           onWalk={toggleWalk}
+          onStep={step}
           onShowWelcome={() => setWelcome(true)}
         />
       }
@@ -336,7 +348,7 @@ export function RevelationMirror({
         {welcome ? (
           <section
             aria-labelledby="mirror-welcome"
-            className={cn(styles.sheet, "absolute bottom-6 left-6 z-20 w-[392px] rounded-panel border border-s-line bg-s-raised p-5 shadow-float")}
+            className={cn(styles.sheet, "absolute bottom-6 left-6 z-20 w-[min(392px,calc(100%-3rem))] rounded-panel border border-s-line bg-s-raised p-5 shadow-float")}
           >
             <div className="flex items-start justify-between gap-4">
               <h2 id="mirror-welcome" className="text-[17px] leading-snug font-semibold tracking-[-0.01em] [font-stretch:108%]">
@@ -355,7 +367,7 @@ export function RevelationMirror({
               Read from the first verse inward and the book repeats itself in reverse: 51 pairs of passages, nested like
               brackets, close in on one centre in chapter 12. Pick any pair to read both halves side by side.
             </p>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
               <ToolButton
                 variant="primary"
                 onClick={() => {
